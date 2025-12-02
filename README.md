@@ -11,9 +11,13 @@ Every peripheral is built from the reference manual, using pure register program
 This repo is designed to be:
 
 ✔ Beginner-friendly
+
 ✔ Easy to navigate
+
 ✔ Industry-standard structure
+
 ✔ Ideal for interviews & portfolio
+
 ✔ Expandable for future MCUs (F1, F4, G4, L0, etc.)
 
 
@@ -28,13 +32,21 @@ ADC (single & continuous)
 SysTick Timer
 
 General Purpose Timers (PWM, Input Capture, Output Compare)
+
 EXTI (Interrupts)
+
 DMA
+
 SPI (master)
+
 I2C (master read/write)
+
 RCC (clock config)
+
 Flash (optional)
+
 NVIC (interrupt controller)
+
 
 All drivers are tested on:
 MCU: STM32F030C8T6
