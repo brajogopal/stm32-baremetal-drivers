@@ -11,21 +11,22 @@ Every peripheral is built from the reference manual, using pure register program
 This repo is designed to be:
 
 ✔ Beginner-friendly
-
 ✔ Easy to navigate
-
 ✔ Industry-standard structure
-
 ✔ Ideal for interviews & portfolio
-
 ✔ Expandable for future MCUs (F1, F4, G4, L0, etc.)
 
 
 📚 Topics Covered (Drivers Included)
+
 GPIO (input/output/AF/modes)
+
 UART (TX/RX, baud config, polling & interrupt)
+
 ADC (single & continuous)
+
 SysTick Timer
+
 General Purpose Timers (PWM, Input Capture, Output Compare)
 EXTI (Interrupts)
 DMA
