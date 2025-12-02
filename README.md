@@ -24,29 +24,7 @@ This repo is designed to be:
   
 📚 Topics Covered (Drivers Included)
 
-GPIO (input/output/AF/modes)
-
-UART (TX/RX, baud config, polling & interrupt)
-
-ADC (single & continuous)
-
-SysTick Timer
-
-General Purpose Timers (PWM, Input Capture, Output Compare)
-
-EXTI (Interrupts)
-
-DMA
-
-SPI (master)
-
-I2C (master read/write)
-
-RCC (clock config)
-
-Flash (optional)
-
-NVIC (interrupt controller)
+GPIO (input/output/AF/modes), UART (TX/RX, baud config, polling & interrupt), ADC (single & continuous), SysTick Timer, General Purpose Timers (PWM, Input Capture, Output Compare), EXTI (Interrupts), DMA, SPI (master), I2C (master read/write), RCC (clock config), Flash (optional), NVIC (interrupt controller)
 
 
 All drivers are tested on:
