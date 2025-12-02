@@ -21,6 +21,7 @@ This repo is designed to be:
 ✔ Expandable for future MCUs (F1, F4, G4, L0, etc.)
 
 
+
 📚 Topics Covered (Drivers Included)
 
 GPIO (input/output/AF/modes)
