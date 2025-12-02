@@ -9,11 +9,17 @@ This project is built to help anyone understand how microcontrollers really work
 Every peripheral is built from the reference manual, using pure register programming.
 
 This repo is designed to be:
+
 ✔ Beginner-friendly
+
 ✔ Easy to navigate
+
 ✔ Industry-standard structure
+
 ✔ Ideal for interviews & portfolio
+
 ✔ Expandable for future MCUs (F1, F4, G4, L0, etc.)
+
 
 📚 Topics Covered (Drivers Included)
 GPIO (input/output/AF/modes)
