@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;GPIO_toggle_addr&apos; to &apos;01_GPIO_toggle_addr&apos;" description="Rename resource &apos;GPIO_toggle_addr&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/GPIO_toggle_addr" name="01_GPIO_toggle_addr" stamp="1765360966126" updateReferences="true"/>
+</session>

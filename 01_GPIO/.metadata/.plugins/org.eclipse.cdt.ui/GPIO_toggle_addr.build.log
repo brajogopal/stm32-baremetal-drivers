@@ -1,20 +1,10 @@
-18:50:36 **** Build of configuration Debug for project GPIO_toggle_addr ****
+15:31:08 **** Incremental Build of configuration Debug for project GPIO_toggle_addr ****
 make -j12 all 
-arm-none-eabi-gcc -mcpu=cortex-m0 -g3 -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32f030c8tx.d" -MT"Startup/startup_stm32f030c8tx.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Startup/startup_stm32f030c8tx.o" "../Startup/startup_stm32f030c8tx.s"
-arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m0 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F0 -DSTM32F030C8Tx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/main.o"
-arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m0 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F0 -DSTM32F030C8Tx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/syscalls.o"
-arm-none-eabi-gcc "../Src/sysmem.c" -mcpu=cortex-m0 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F0 -DSTM32F030C8Tx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/sysmem.d" -MT"Src/sysmem.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/sysmem.o"
-arm-none-eabi-gcc -o "GPIO_toggle_addr.elf" @"objects.list"   -mcpu=cortex-m0 -T"C:\Users\brajo\OneDrive\Desktop\Github\stm32-baremetal-drivers\01_GPIO\GPIO_toggle_addr\STM32F030C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="GPIO_toggle_addr.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: GPIO_toggle_addr.elf
- 
 arm-none-eabi-size  GPIO_toggle_addr.elf 
-arm-none-eabi-objdump -h -S GPIO_toggle_addr.elf  > "GPIO_toggle_addr.list"
    text	   data	    bss	    dec	    hex	filename
-    532	      0	   1568	   2100	    834	GPIO_toggle_addr.elf
+    556	      0	   1568	   2124	    84c	GPIO_toggle_addr.elf
 Finished building: default.size.stdout
  
-Finished building: GPIO_toggle_addr.list
- 
 
-18:50:37 Build Finished. 0 errors, 0 warnings. (took 1s.340ms)
+15:31:08 Build Finished. 0 errors, 0 warnings. (took 240ms)
 

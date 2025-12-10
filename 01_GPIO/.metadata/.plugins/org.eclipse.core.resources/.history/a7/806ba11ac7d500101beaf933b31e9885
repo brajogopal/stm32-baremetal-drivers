@@ -1,0 +1,48 @@
+// LED Connected to PA5 (Port-A & Pin-5)
+// Push button to PA6 (Port-A & Pin-6)
+#include <stdint.h>
+#define PERIPH_BASE    (0x40000000UL)
+
+//GPIOA address - 0x4800 0000
+#define GPIOA_OFFSET  (0x08000000UL)
+#define GPIOA_BASE    (PERIPH_BASE + GPIOA_OFFSET)
+
+//RCC Base address - 0x4002 1000
+#define RCC_OFFSET    (0x00021000UL)
+#define RCC_BASE      (PERIPH_BASE + RCC_OFFSET)
+
+//need to set Bit-17 to clock enable on GPIOA
+#define GPIOAEN       (1U<<17) //0b 0000 0000 0000 0010 0000 0000 0000 0000
+#define PIN5          (1U<<5)
+#define LED_PIN       PIN5
+
+typedef struct
+{
+	volatile uint32_t DUMMY[5]; //this dummy register created to skip 4*32 bit in register address
+	volatile uint32_t AHBENR;   //GPIO port output data register
+}RCC_TypeDef;
+
+typedef struct
+{
+	volatile uint32_t MODER;  //GPIO port mode register
+	volatile uint32_t DUMMY[4]; //this dummy register created to skip 4*32 bit in register address
+	volatile uint32_t ODR;   //GPIO port output data register
+}GPIO_TypeDef;
+
+#define GPIOA     ((GPIO_TypeDef*)GPIOA_BASE)  /* GPIOA_BASE is the starting address of GPIOA registers & "(GPIO_TypeDef*)" converts that address into a pointer */
+#define RCC       ((RCC_TypeDef*)RCC_BASE)
+
+int main(void){
+	/*1.Enable clock access to GPIOA*/
+	RCC->AHBENR |= GPIOAEN;
+
+	/* 2.set PA5 as output pin*/
+	GPIOA->MODER |= (1U<<10);  //set bit 10 to 1
+	GPIOA->MODER &=~(1U<<11);  //set bit 11 to 0
+
+	while(1){
+		//set PA5 HIGH
+		GPIOA->ODR ^= LED_PIN ;
+		for(int i=0;i<100000;i++){}
+	}
+}
