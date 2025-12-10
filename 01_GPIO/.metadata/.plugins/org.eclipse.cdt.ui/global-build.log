@@ -1,21 +1,13 @@
-18:23:14 **** Incremental Build of configuration Debug for project 02_GPIO_toggle_addr ****
+18:28:07 **** Build of configuration Debug for project 01_GPIO_toggle_addr ****
 make -j12 all 
-arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m0 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F0 -DSTM32F030C8Tx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Src/main.o"
-arm-none-eabi-gcc -o "02_GPIO_toggle_addr.elf" @"objects.list"   -mcpu=cortex-m0 -T"C:\Users\brajo\OneDrive\Desktop\Github\stm32-baremetal-drivers\01_GPIO\02_GPIO_toggle_addr\STM32F030C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="02_GPIO_toggle_addr.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: 02_GPIO_toggle_addr.elf
+arm-none-eabi-gcc -o "01_GPIO_toggle_addr.elf" @"objects.list"   -mcpu=cortex-m0 -T"C:\Users\brajo\OneDrive\Desktop\Github\stm32-baremetal-drivers\01_GPIO\GPIO_toggle_addr\STM32F030C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="01_GPIO_toggle_addr.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: 01_GPIO_toggle_addr.elf
  
-arm-none-eabi-size  02_GPIO_toggle_addr.elf 
-arm-none-eabi-objdump -h -S 02_GPIO_toggle_addr.elf  > "02_GPIO_toggle_addr.list"
+arm-none-eabi-size  01_GPIO_toggle_addr.elf 
+arm-none-eabi-objdump -h -S 01_GPIO_toggle_addr.elf  > "01_GPIO_toggle_addr.list"
    text	   data	    bss	    dec	    hex	filename
-    556	      0	   1568	   2124	    84c	02_GPIO_toggle_addr.elf
+    556	      0	   1568	   2124	    84c	01_GPIO_toggle_addr.elf
 Finished building: default.size.stdout
  
-Finished building: 02_GPIO_toggle_addr.list
- 
-18:23:18 **** Incremental Build of configuration Debug for project 02_GPIO_toggle_addr ****
-make -j12 all 
-arm-none-eabi-size  02_GPIO_toggle_addr.elf 
-   text	   data	    bss	    dec	    hex	filename
-    556	      0	   1568	   2124	    84c	02_GPIO_toggle_addr.elf
-Finished building: default.size.stdout
+Finished building: 01_GPIO_toggle_addr.list
  
