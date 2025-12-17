@@ -18,6 +18,7 @@ Release/
 .vscode/
 .idea/
 .settings/
+.metadata/
 
 # OS files
 .DS_Store
