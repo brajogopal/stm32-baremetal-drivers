@@ -61,3 +61,7 @@ makefile
 
 .DS_Store
 Thumbs.db
+
+# CubeIDE syscalls/sysmem
+syscalls.c
+sysmem.c
