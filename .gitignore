@@ -1,29 +1,63 @@
-# Build outputs
-build/
-out/
+####################################################
+# STM32CubeIDE / Eclipse files
+####################################################
+
+.metadata/
+.settings/
+.project
+.cproject
+*.launch
+
+####################################################
+# Build output folders
+####################################################
+
 Debug/
 Release/
+build/
+out/
+Binaries/
 
-# Binary files
+####################################################
+# Generated build files
+####################################################
+
 *.elf
-*.hex
 *.bin
+*.hex
 *.map
-
-# Object & dependency files
+*.list
 *.o
 *.d
 
-# IDE files
-.vscode/
-.idea/
-.settings/
-.metadata/
+####################################################
+# Makefile auto-generated files
+####################################################
 
-# OS files
-.DS_Store
-Thumbs.db
+objects.list
+objects.mk
+sources.mk
+makefile
+*.mk
 
-# Temporary files
+####################################################
+# IDE temporary / cache files
+####################################################
+
 *.swp
 *.log
+*.tmp
+
+####################################################
+# VS Code (if used alongside)
+####################################################
+
+.vscode/
+.idea/
+
+####################################################
+# OS-specific files
+####################################################
+
+.DS_Store
+Thumbs.db
