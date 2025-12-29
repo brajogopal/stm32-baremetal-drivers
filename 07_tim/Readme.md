@@ -14,13 +14,6 @@ The goal of this folder is to help learners understand:
 
 ---
 
-## 📂 Folder Structure
-
-07_tim/
-├── 01_systick_timer
-├── 02_basic_timer
-├── 03_OutputCompare
-└── README.md
 
 
 Each folder represents **one learning stage**.
