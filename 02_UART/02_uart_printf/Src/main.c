@@ -29,6 +29,7 @@ int main (void){
 	usart2_tx_init();
 	while(1){
 		printf("hello from stm32..\n\r");
+
 	}
 }
 

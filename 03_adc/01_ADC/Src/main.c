@@ -3,6 +3,7 @@
 #include 	"adc.h"
 
 #define UART_BAUDRATE	115200
+volatile uint32_t sensor_value;
 
 int main (void){
 
@@ -10,7 +11,7 @@ int main (void){
     adc_init(1);
 
 	while(1){
-		uint32_t sensor_value = adc_read(1);
-		printf("sensor value : %d \n\r", sensor_value);
+		sensor_value = adc_read(1);
+		printf("sensor value : %lu \n\r", sensor_value);
 	}
 }

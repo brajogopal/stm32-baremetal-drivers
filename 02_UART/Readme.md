@@ -25,7 +25,7 @@ Follow the order strictly if you are a beginner.
 ↓
 02_uart_printf
 ↓
-03_uart_modular
+03_uart_clock_discovery
 ↓
 04_uart_rx_tx
 
@@ -79,7 +79,7 @@ Use UART comfortably for debugging and logging.
 
 ---
 
-## 03_uart_modular – Modular UART Driver
+## 03_uart_clock_discovery – UART Driver with Runtime Clock Detection
 
 This project introduces **proper driver design**.
 
@@ -89,10 +89,13 @@ The code is split into:
 - `main.c` → application logic
 
 ### What you learn:
-- Driver vs application separation
-- Public API vs private functions
-- Why `main.c` should not access registers
-- Writing reusable and portable drivers
+### What you learn:
+- Modular UART driver design
+- Public vs private driver functions
+- Runtime system clock detection
+- Why baud rate depends on PCLK
+- When drivers should expose helper APIs
+- Clean separation between hardware, driver, and application
 
 **Goal:**  
 Learn how **real embedded drivers** are written.
