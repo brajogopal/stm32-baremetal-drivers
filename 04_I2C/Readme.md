@@ -1,4 +1,4 @@
-# 📘 I2C Timing Calculation (STM32F0 – Register Level)
+# 📘 I2C Timing Calculation (STM32F0 – rcc_clock.c)
 
 ## Overview
 
