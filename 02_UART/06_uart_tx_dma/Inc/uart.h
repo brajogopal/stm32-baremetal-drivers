@@ -8,6 +8,10 @@
 #define UART_H_
 
 #include <stdint.h>
+#include "stm32f030x8.h"
+
+#define  	ISR_TCIF4		(1U<<13)
+#define 	IFCR_CTCIF4		(1U<<13)
 
 /* Initialize USART2 TX on PA2 */
 void uart2_tx_init(uint32_t baudrate);
@@ -19,6 +23,8 @@ void uart2_rxtx_init(uint32_t baudrate);
 char uart2_read(void);
 
 void uart2_rx_interrupt_init(uint32_t baudrate);
+
+void dma_uart2_tx_init(uint32_t src,uint32_t dst,uint32_t len);
 
 /* Transmit one character over USART2 */
 void uart2_write(char ch);

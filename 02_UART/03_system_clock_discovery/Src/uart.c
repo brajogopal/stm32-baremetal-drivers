@@ -17,8 +17,6 @@
 
 
 
-
-
 /* ---------- Public functions ---------- */
 uint32_t get_pclk1_freq(void);
 static uint16_t compute_uart_brr(uint32_t pclk, uint32_t baudrate);
@@ -34,6 +32,8 @@ static uint16_t compute_uart_brr(uint32_t pclk, uint32_t baudrate)
 {
     return (pclk + (baudrate / 2U)) / baudrate;
 }
+
+
 
 /* Get APB1 clock frequency (USART2 clock) */
 uint32_t get_pclk1_freq(void)

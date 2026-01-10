@@ -18,6 +18,12 @@
 #define ISR_TXE			(1U<<7)
 #define ISR_RXNE		(1U<<5)
 
+#define AHBENR_DMAEN	(1U<<0)
+#define DMA_CCR_EN		(1U<<0)
+#define DMA_CCR_MINC	(1U<<7)
+#define DMA_CCR_DIR		(1U<<4)
+#define DMA_CCR_TEIE	(1U<<3)
+#define USART2_CR3_DMAT	(1U<<7)
 
 
 
@@ -173,6 +179,48 @@ void uart2_rx_interrupt_init(uint32_t baudrate)
     USART2->CR1 |= CR1_UE;	    /* Enable USART */
 
 }
+
+void dma_uart2_tx_init(uint32_t src,uint32_t dst,uint32_t len){
+	//1.Enable clock access to DMA
+	RCC->AHBENR |= AHBENR_DMAEN;
+
+	//2.Disable DMA channel before configuration
+	DMA1_Channel4->CCR &= ~DMA_CCR_EN;
+
+	//wait until dma1_channel is disabled
+	while(DMA1_Channel4->CCR & DMA_CCR_EN){}
+
+	//3.Clear interrupt flag for ch4
+	DMA1->IFCR |= (0xF<<12);
+
+	//4.set peripheral address (Usart2_tdr)
+	DMA1_Channel4->CPAR = dst;
+
+	//5.set memory address (TX buffer)
+	DMA1_Channel4->CMAR = src;
+
+	//6.set Length
+	DMA1_Channel4->CNDTR = len;
+
+	//7.Enable memory increment
+	DMA1_Channel4->CCR |= DMA_CCR_MINC;
+
+	//8.configure transfer direction
+	DMA1_Channel4->CCR |= DMA_CCR_DIR;
+
+	//9.transfer complete interrupt
+	DMA1_Channel4->CCR |= DMA_CCR_TEIE;
+
+	//11.Enable DMA channel
+	DMA1_Channel4->CCR |= DMA_CCR_EN;
+
+	//12.Enable uart2 transmitter in DMA
+	USART2->CR3 |= USART2_CR3_DMAT;
+
+	//13.Dma interrupt enable in nvic
+	__NVIC_EnableIRQ(DMA1_Channel4_5_IRQn);
+}
+
 
 char uart2_read(void){
 	/*make sure the receive data register isn't empty*/

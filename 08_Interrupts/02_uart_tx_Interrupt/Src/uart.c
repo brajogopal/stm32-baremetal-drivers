@@ -1,11 +1,12 @@
 /*
  * uart.c
  *
- *  Created on: Dec 19, 2025
+ *  Created on: 31-Dec-2025
  *      Author: brajo
  */
+
 #include 	"uart.h"
-#include "stm32f030x8.h"
+
 
 /* ---------- Private macros ---------- */
 #define GPIOA_EN     	(1U<<17)
@@ -17,6 +18,8 @@
 #define CR1_UE			(1U<<0)
 #define ISR_TXE			(1U<<7)
 #define ISR_RXNE		(1U<<5)
+
+#define USART_CR1_RXNEIE			(1U<<5)
 
 
 
@@ -37,6 +40,8 @@ static uint16_t compute_uart_brr(uint32_t pclk, uint32_t baudrate)
 {
     return (pclk + (baudrate / 2U)) / baudrate;
 }
+
+
 
 /* Get APB1 clock frequency (USART2 clock) */
 static uint32_t get_pclk1_freq(void)
@@ -75,6 +80,8 @@ static uint32_t get_pclk1_freq(void)
     return sysclk;
 }
 
+
+
 /* Initialize USART2 TX on PA2 (AF1) */
 void uart2_tx_init(uint32_t baudrate)
 {
@@ -99,6 +106,8 @@ void uart2_tx_init(uint32_t baudrate)
     USART2->CR1 |= CR1_UE;    /* Enable USART */
 }
 
+
+
 /* Initialize USART2 RX & TX on PA2 and PA3 (AF1) */
 void uart2_rxtx_init(uint32_t baudrate)
 {
@@ -113,13 +122,18 @@ void uart2_rxtx_init(uint32_t baudrate)
     GPIOA->AFR[0] &= ~(0xFU << 8);  //Clearing all the bits from 8 to 11
     GPIOA->AFR[0] |=  (1U << 8); 	//seting PA2 AF mode as 0001
 
+
+
     /* PA3 → Alternate function mode */
     GPIOA->MODER &= ~(3U << 6);			//clear bit 6 & 7
     GPIOA->MODER |=  (2U << 6);			//set MODER3 as 10 for AF
     GPIOA->OSPEEDR |= (1U << 7);   		/* PA3 → High speed */
+
     /* PA3 → AF1 (USART2_RX) */
     GPIOA->AFR[0] &= ~(0xFU << 12);  //Clearing all the bits from 8 to 11
     GPIOA->AFR[0] |=  (1U << 12); 	//seting PA3 AF mode as 0001
+
+
 
     RCC->APB1ENR |= USART2_EN;    /* Enable USART2 clock */
 
@@ -129,6 +143,7 @@ void uart2_rxtx_init(uint32_t baudrate)
 
     USART2->CR1 |= CR1_UE;    /* Enable USART */
 }
+
 
 /* Initialize USART2 RX interrupt on and PA3 (AF1) */
 void uart2_rx_interrupt_init(uint32_t baudrate)
@@ -174,11 +189,14 @@ void uart2_rx_interrupt_init(uint32_t baudrate)
 
 }
 
+
 char uart2_read(void){
 	/*make sure the receive data register isn't empty*/
     while (!(USART2->ISR & ISR_RXNE)){};	/* Wait until RXNE is empty */
     return USART2->RDR; 					//READ DATA
 }
+
+
 
 /* Transmit one character */
 void uart2_write(char ch)
@@ -188,9 +206,12 @@ void uart2_write(char ch)
     USART2->TDR = ch;
 }
 
+
+
 /* Redirect printf() to USART2 */
 int __io_putchar(int ch)
 {
     uart2_write((char)ch);
     return ch;
 }
+
