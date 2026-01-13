@@ -28,6 +28,10 @@ void I2C1_init (void){
     /* 2. Set PB8 & PB9 to Alternate Function Mode (10) */
     GPIOB->MODER &= ~((3U << 16) | (3U << 18));  // Clear mode bits for PB8 & PB9
     GPIOB->MODER |=  ((2U << 16) | (2U << 18));  // Set 10 (AF mode) for both pins
+    
+    /*AFRH Configured for PB8 & PB9*/
+    GPIOB->AFR[1] &= ~((0xF << 0) | (0xF << 4));  // Clear AFRH bits for PB8, PB9
+    GPIOB->AFR[1] |=  ((1U  << 0) | (1U  << 4));  // AF1 for PB8, PB9
 
 	//set PB8 and PB9 output type to open drain
     GPIOB->OTYPER |= ((1U<<8) | (1U<<9));
