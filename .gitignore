@@ -74,7 +74,7 @@ sysmem.c
 # Ignore Startup and linker scripts everywhere
 ####################################################
 
-Startup/
+
 **/Startup/
 *.ld
 
@@ -82,6 +82,6 @@ Startup/
 # BUT keep them in Bootloader
 ####################################################
 
-!Bootloader/Startup/
+
 !Bootloader/Startup/**
 !Bootloader/**/*.ld
