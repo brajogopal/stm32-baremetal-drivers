@@ -1,5 +1,6 @@
 #include "stm32f030x8.h"
 #include "delay.h"
+#include <stdio.h>
 
 #define GPIOAEN       (1U<<17)
 

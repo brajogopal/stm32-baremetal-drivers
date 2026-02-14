@@ -1,6 +1,12 @@
 /*
  * delay.c
  *
+ *  Created on: 14-Feb-2026
+ *      Author: BROJOGOPAL
+ */
+/*
+ * delay.c
+ *
  *  Created on: 21-Jan-2026
  *      Author: brajo
  */
@@ -42,5 +48,6 @@ void delay_ms(uint32_t tim){
 
     TIM1->CR1 &= ~TIM1_CR1_CEN;
 }
+
 
 

@@ -10,14 +10,14 @@
 #include "delay.h"
 
 
-#define RCC_APB2ENR_TIM1EN		(1U<<11)
+#define APB2ENR_TIM1EN		(1U<<11)
 #define prescaler				8000
 #define TIM1_CR1_CEN			(1U<<0)
 
 
 void delay_ms(uint32_t tim){
 	/*Enable clock access to timer1*/
-	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+	RCC->APB2ENR |= APB2ENR_TIM1EN;
 
 	/*set prescaler value*/
 	TIM1->PSC = prescaler -1;
