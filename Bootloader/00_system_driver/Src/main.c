@@ -1,7 +1,8 @@
 /*MODULES -
  * UART
- * GPIO
+ * GPIO (BSP)
  * Time-base
+ * ADC
  * */
 
 
