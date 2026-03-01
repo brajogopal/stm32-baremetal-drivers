@@ -1,16 +1,10 @@
 /*
  * bsp.c
  *
-<<<<<<< HEAD
  *  Created on: 01-Mar-2026
  *      Author: BROJOGOPAL
  */
 
-
-=======
- *  Created on: 14-Feb-2026
- *      Author: brajo
- */
 #include "bsp.h"
 #include "stm32f030x8.h"
 
@@ -48,4 +42,4 @@ void pinMode(GPIO_TypeDef *port,uint16_t pin, mode_t mode){
     	 port->MODER |= (3U << (pin * 2));
     }
 }
->>>>>>> a7ba313c676c8d4861c8decc2e06bf96edf81068
+
