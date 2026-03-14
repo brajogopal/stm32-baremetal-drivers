@@ -9,37 +9,67 @@
 #include "stm32f030x8.h"
 
 
-typedef enum {
-    INPUT  = 0x0,
-    OUTPUT = 0x1,
-    AF     = 0x2,
-    PWM	   = 0x3
-} mode_t;
 
-typedef enum {
-    GPIOA  = 0x0,
-    GPIOB = 0x1,
-    GPIOC  = 0x2,
-    GPIOD = 0x3
-} port_t;
 
-void pinMode(GPIO_TypeDef *port,uint16_t pin, mode_t mode){
+	static GPIO_TypeDef *gpio_ports[] =
+	{
+	    GPIOA,
+	    GPIOB,
+	    GPIOC,
+	    GPIOD
+	};
 
-	RCC->AHBENR |=
+	static const uint32_t gpio_clocks[] =
+	{
+	    RCC_AHBENR_GPIOAEN,
+	    RCC_AHBENR_GPIOBEN,
+	    RCC_AHBENR_GPIOCEN,
+	    RCC_AHBENR_GPIODEN
+	};
 
-	port->MODER &= ~(3U << (pin * 2));   // clear bits
-    if (mode == INPUT) {
-        // configure as input
-    	 port->MODER |= (0U << (pin * 2));
-    } else if (mode == OUTPUT) {
-        // configure as output
-    	 port->MODER |= (1U << (pin * 2));
-    } else if (mode == AF) {
-        // configure alternate function
-    	 port->MODER |= (2U << (pin * 2));
-    } else if (mode == PWM) {
-        // configure alternate function
-    	 port->MODER |= (3U << (pin * 2));
-    }
+	void pinMode(pin_t pin, mode_t mode)
+	{
+	    uint8_t port = PIN_PORT(pin);
+	    uint8_t number = PIN_NUMBER(pin);
+
+	    GPIO_TypeDef *gpio = gpio_ports[port];
+
+	    RCC->AHBENR |= gpio_clocks[port];
+
+	    gpio->MODER &= ~(3U << (number * 2));
+	    gpio->MODER |=  (mode << (number * 2));
+	}
+
+void digitalWrite(pin_t pin, uint8_t state)
+{
+    uint8_t port = PIN_PORT(pin);
+    uint8_t number = PIN_NUMBER(pin);
+
+    GPIO_TypeDef *gpio = gpio_ports[port];
+
+    if(state)
+        gpio->BSRR = (1U << number);
+    else
+        gpio->BSRR = (1U << (number + 16));
+}
+
+uint8_t digitalRead(pin_t pin)
+{
+    uint8_t port = PIN_PORT(pin);
+    uint8_t number = PIN_NUMBER(pin);
+
+    GPIO_TypeDef *gpio = gpio_ports[port];
+
+    return (gpio->IDR & (1U << number)) ? 1 : 0;
+}
+
+void togglePin(pin_t pin)
+{
+    uint8_t port = PIN_PORT(pin);
+    uint8_t number = PIN_NUMBER(pin);
+
+    GPIO_TypeDef *gpio = gpio_ports[port];
+
+    gpio->ODR ^= (1U << number);
 }
 
