@@ -64,9 +64,16 @@ uint8_t digitalRead(pin_t pin);
 #define PB7  (0x17)
 #define PB8  (0x18)
 #define PB9  (0x19)
+#define PB10 (0x1A)
+#define PB11 (0x1B)
+#define PB12 (0x1C)
+#define PB13 (0x1D)
+#define PB14 (0x1E)
+#define PB15 (0x1F)
 
-#define PC0  (0x20)
-#define PC1  (0x21)
+#define PC13 (0x2D)
+#define PC14 (0x2E)
+#define PC15 (0x2F)
 
 /* Pin decoding */
 

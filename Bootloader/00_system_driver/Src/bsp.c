@@ -21,10 +21,10 @@
 
 	static const uint32_t gpio_clocks[] =
 	{
-	    RCC_AHBENR_GPIOAEN,
-	    RCC_AHBENR_GPIOBEN,
-	    RCC_AHBENR_GPIOCEN,
-	    RCC_AHBENR_GPIODEN
+	    RCC_AHBENR_GPIOAEN,		//(1U<<17)
+	    RCC_AHBENR_GPIOBEN,		//(1U<<18)
+	    RCC_AHBENR_GPIOCEN,		//(1U<<19)
+		RCC_AHBENR_GPIODEN		//(1U<<20)
 	};
 
 	void pinMode(pin_t pin, mode_t mode)
