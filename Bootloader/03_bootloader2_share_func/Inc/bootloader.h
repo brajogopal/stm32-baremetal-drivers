@@ -1,0 +1,27 @@
+/*
+ * bootloader.h
+ *
+ *  Created on: 10-Apr-2026
+ *      Author: BROJOGOPAL
+ */
+
+#ifndef BOOTLOADER_H_
+#define BOOTLOADER_H_
+
+#define SYSCFG_EN					(1U<<0)
+#define APPLICATION_ADDRESS			0x08007000
+#define VECTOR_COUNT 				48
+
+#define SRAM_START					0x20000000
+#define SRAM_SIZE  (8 * 1024)					//For STM32F030C8TX
+#define SRAM_END   (SRAM_START + SRAM_SIZE)
+
+#define FLASH_START 0x08000000
+#define FLASH_END   (FLASH_START + (64 * 1024))	//For STM32F030C8TX
+
+typedef void (*func_ptr)(void);
+int is_valid_app(uint32_t addr);
+void relocate_vector_table(void);
+
+
+#endif /* BOOTLOADER_H_ */

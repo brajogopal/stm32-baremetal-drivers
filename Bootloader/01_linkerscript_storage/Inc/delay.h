@@ -9,5 +9,6 @@
 #define DELAY_H_
 
 void delay_ms(uint32_t tim);
+void delay(uint32_t sec);
 
 #endif /* DELAY_H_ */
