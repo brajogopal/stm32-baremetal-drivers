@@ -100,6 +100,16 @@ FLASH (64KB total)
 0x08007000 ──────────────── Application
 ```
 
+0x08000000 ┌────────────────────────────┐
+           │       Bootloader           │
+           │        (24 KB)             │
+0x08006000 ├────────────────────────────┤
+           │      Shared API Table      │
+           │         (4 KB)             │
+0x08007000 ├────────────────────────────┤
+           │       Application          │
+           │        (Remaining)         │
+           └────────────────────────────┘
 ---
 
 # 🔗 Shared API Mechanism
@@ -116,6 +126,17 @@ const btl_common_apis common_api_table = {
     .digitalWrite = digitalWrite,
 };
 ```
+### Vector Table Relocation Diagram
+
+Before:
+0x00000000 → Bootloader Vector Table
+
+After relocation:
+SRAM (0x20000000) ← Application Vector Table
+0x00000000 mapped to SRAM
+
+CPU now reads interrupts from SRAM
+
 
 ### Application:
 
@@ -127,21 +148,44 @@ const btl_common_apis *common_apis =
 
 common_apis->pinMode(PA5, OUTPUT);
 ```
-
+        ┌────────────────────┐
+        │   Bootloader       │
+        │                    │
+        │ common_api_table   │
+        │ 0x08006000         │
+        │                    │
+        └─────────┬──────────┘
+                  │ (function pointers)
+                  │
+                  ▼
+        ┌────────────────────┐
+        │   Application      │
+        │                    │
+        │ common_apis->      │
+        │    pinMode()       │
+        │    digitalWrite()  │
+        │                    │
+        └────────────────────┘
 ---
 
-# 🚀 Boot Flow
+# 🚀 Boot Flow Diagram
 
-1. Bootloader starts
-2. Validates application:
+[Reset]
+   ↓
+[Bootloader Start]
+   ↓
+[Check Application Validity]
+   ↓ (invalid)
+[Stay in Bootloader]
 
-   * MSP in SRAM
-   * Reset handler in Flash
-   * Thumb bit check
-3. Relocates vector table to SRAM
-4. Remaps SRAM to 0x00000000
-5. Sets MSP
-6. Jumps to application
+   ↓ (valid)
+[Relocate Vector Table]
+   ↓
+[Set MSP]
+   ↓
+[Jump to Application]
+   ↓
+[Application Running]
 
 ---
 
