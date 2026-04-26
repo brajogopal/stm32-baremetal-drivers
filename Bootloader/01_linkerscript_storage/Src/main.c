@@ -1,10 +1,8 @@
-/*MODULES -
- * UART
- * GPIO (BSP)
- * Time-base
- * ADC
- * */
-
+/**
+ * @file           : main.c
+ * @author         : By BrajoGopal
+ * @brief          : Main program body
+ */
 
 #include "stm32f030x8.h"
 #include "delay.h"

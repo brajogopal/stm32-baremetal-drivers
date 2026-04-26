@@ -1,13 +1,14 @@
 /*
  * bootloader.h
  *
- *  Created on: 10-Apr-2026
- *      Author: BROJOGOPAL
+ *  Created on: 26-Apr-2026
+ *      Author: brajo
  */
 
 #ifndef BOOTLOADER_H_
 #define BOOTLOADER_H_
 
+#include <stdint.h>
 #define SYSCFG_EN					(1U<<0)
 #define APPLICATION_ADDRESS			0x08007000
 #define VECTOR_COUNT 				48
@@ -22,6 +23,7 @@
 typedef void (*func_ptr)(void);
 int is_valid_app(uint32_t addr);
 void relocate_vector_table(void);
+void jmp_to_default_app(void);
 
 
 #endif /* BOOTLOADER_H_ */

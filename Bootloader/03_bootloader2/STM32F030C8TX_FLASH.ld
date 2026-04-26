@@ -27,8 +27,8 @@ MEMORY
 {
   VECTOR_RAM (rw) : ORIGIN = 0x20000000, LENGTH = 0xC0
   RAM    (xrw)    : ORIGIN = 0x200000C0,   LENGTH = 8K - 0xC0
-  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 28K
-  CUSTOM_FLASH(rx) : ORIGIN = 0x8002000,   LENGTH = 1K
+  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 24K
+  CUSTOM_FLASH(rx) : ORIGIN = 0x8006000,   LENGTH = 4K
 }
 
 /* Sections */
@@ -43,13 +43,15 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  /* Shared API Sections */
-  .COMMON_APIS 0x08002000 :
+	
+	/* Shared API Sections */
+  .COMMON_APIS :
   {
     . = ALIGN(4);
     KEEP(*(.COMMON_APIS))
     . = ALIGN(4);
   } > CUSTOM_FLASH
+
   
   /* The program code and other data into "FLASH" Rom type memory */
   .text :

@@ -1,12 +1,43 @@
 /*
  * bootloader.c
  *
- *  Created on: 10-Apr-2026
- *      Author: BROJOGOPAL
+ *  Created on: 26-Apr-2026
+ *      Author: brajo
  */
-#include "stm32f030x8.h"
 #include "bootloader.h"
+#include "stm32f030x8.h"
+#include "uart.h"
+#include "delay.h"
+#include <stdio.h>
 
+#define SYSCFG_EN (1U<<0)
+
+void jmp_to_default_app(void) {
+	uint32_t app_start_address;
+	func_ptr jump_to_app;
+	println("bootloader started..");
+	delay_ms(300);
+
+	if (is_valid_app(APPLICATION_ADDRESS)) {
+
+		__disable_irq();
+		relocate_vector_table();
+
+		/*Initialize main stack pointer */
+		__set_MSP(*(uint32_t*) APPLICATION_ADDRESS);
+
+		app_start_address = *(uint32_t*) (APPLICATION_ADDRESS + 4);
+		jump_to_app = (func_ptr) (app_start_address);
+		println("valid application present..");
+
+		/*jump*/
+		jump_to_app();
+
+		while (1);//Fail-safe design(If execution ever comes back, CPU gets stuck here safely)
+	} else {
+		println("No valid application found");
+	}
+}
 
 
 int is_valid_app(uint32_t addr) {
@@ -32,6 +63,8 @@ int is_valid_app(uint32_t addr) {
 	return 1;
 }
 
+
+
 void relocate_vector_table(void) {
 	uint32_t *src = (uint32_t*) APPLICATION_ADDRESS;
 	uint32_t *dst = (uint32_t*) SRAM_START;
@@ -47,5 +80,4 @@ void relocate_vector_table(void) {
 	__DSB();   // Data Synchronization Barrier
 	__ISB();   // Instruction Synchronization Barrier
 }
-
 

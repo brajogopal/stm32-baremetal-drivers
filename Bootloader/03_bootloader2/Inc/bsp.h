@@ -10,33 +10,27 @@
 #include <stdint.h>
 
 /* Pin type */
-
 typedef uint8_t pin_t;
 
 /* Pin modes */
+typedef uint8_t mode_t;
 
-typedef enum
-{
-    INPUT   = 0x0,
-    OUTPUT  = 0x1,
-    AF      = 0x2,
-    ANALOG  = 0x3
-
-} mode_t;
+#define INPUT   0
+#define OUTPUT  1
+#define AF      2
+#define ANALOG  3
 
 /* Logic states */
-
 #define HIGH 1
 #define LOW  0
 
 /* Function prototypes */
-
 void pinMode(pin_t pin, mode_t mode);
 void digitalWrite(pin_t pin, uint8_t state);
 uint8_t digitalRead(pin_t pin);
+void togglePin(pin_t pin);
 
 /* Pin definitions */
-
 #define PA0  (0x00)
 #define PA1  (0x01)
 #define PA2  (0x02)
