@@ -99,21 +99,6 @@ FLASH (64KB total)
 0x08006000 ──────────────── Shared API (4KB)
 0x08007000 ──────────────── Application
 ```
-
-0x08000000 ┌────────────────┐
-
-           │   Bootloader   │
-
-           │    (24 KB)     │
-
-0x08006000 ├────────────────┤
-
-           │Shared API Table│
-           │   (4 KB)       │
-0x08007000 ├────────────────┤
-           │  Application   │
-           │  (Remaining)   │
-           └────────────────┘
 ---
 
 # 🔗 Shared API Mechanism
