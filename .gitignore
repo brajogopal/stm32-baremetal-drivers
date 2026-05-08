@@ -86,3 +86,4 @@ sysmem.c
 !Bootloader/**/Startup/
 !Bootloader/**/*.ld
 !Bootloader/**/*.s
+!Bootloader/*.md
