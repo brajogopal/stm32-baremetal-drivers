@@ -34,6 +34,7 @@ flash_status_t flash_unlock(void){
 	FLASH->KEYR = FLASH_FKEY1;
 	FLASH->KEYR = FLASH_FKEY2;
 	}
+	return FLASH_OK;
 }
 
 flash_status_t flash_lock(void){
@@ -57,9 +58,8 @@ flash_status_t flash_erase_page(uint32_t addr){
 		{
 		FLASH->SR |= STATUS_EOP;
 		}
-
 		FLASH->CR &= ~FLASH_PER;
-
+		return FLASH_OK;
 	}	else	{
 		return FLASH_ERROR;
 	}
@@ -67,19 +67,28 @@ flash_status_t flash_erase_page(uint32_t addr){
 
 
 flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
+	if(FLASH->CR & FLASH_LOCK)
+	{
+    	return FLASH_ERROR;
+	}
 	FLASH->CR |= FLASH_PG;
+	if((addr % 2) | (*(__IO uint16_t*)addr != 0xFFFF))
+	{
+    	return FLASH_ERROR;
+	}
 	*(__IO uint16_t*)(addr) = data;
 	flash_wait_busy();
 	if ((FLASH->SR & STATUS_EOP) != 0)
 	{
 	  FLASH->SR |= STATUS_EOP; 
+	  return FLASH_OK;
 	}	else	{
 		return FLASH_ERROR;
 	}
 	FLASH->CR &= ~FLASH_PG;
 }
 
-flash_program_buffer(addr, data, length){
+flash_program_buffer(uint32_t addr, uint16_t *data, uint32_t length){
 	uint32_t buffer[] = data;
 	for(int i = 0, i < length, i++){
 		flash_program_halfword(buffer[i], data);
