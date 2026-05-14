@@ -81,10 +81,10 @@ flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
 	FLASH->CR &= ~FLASH_PG;
 }
 
-flash_program_buffer(addr, data, length){
-	uint32_t buffer[] = data;
+flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t  length){
+	
 	for(int i = 0, i < length, i++){
-		flash_program_halfword(buffer[i], data);
+		flash_program_halfword((addr + (i * 2)), data[i]);
 	}
 	return FLASH_OK;
 }
