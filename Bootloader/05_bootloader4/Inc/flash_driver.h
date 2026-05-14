@@ -21,4 +21,6 @@ flash_status_t flash_lock(void);
 flash_status_t flash_erase_page(uint32_t addr);
 flash_status_t flash_program_halfword(uint32_t addr,uint16_t data);
 
+flash_status_t flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t length);
+
 #endif /* FLASH_DRIVER_H_ */
