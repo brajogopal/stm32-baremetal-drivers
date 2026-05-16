@@ -90,6 +90,8 @@ flash_status_t flash_erase_page(uint32_t addr){
 		}
 		FLASH->CR &= ~FLASH_PER;
 
+		return FLASH_OK;
+
 	}	else	{
 		return FLASH_ERROR;
 	}
@@ -98,12 +100,9 @@ flash_status_t flash_erase_page(uint32_t addr){
 
 
 flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
-	FLASH->CR |= FLASH_PG;
-	*(__IO uint16_t*)(addr) = data;
-	flash_wait_busy();
-	if ((FLASH->SR & STATUS_EOP) != 0)
-	{
 
+	if((addr % 2) | (*(__IO uint16_t*)addr != 0xFFFF)) //Check 16bit DATA Alignment & Address Erased properly
+	{
 	    return FLASH_ERROR;
 	}
 
@@ -132,7 +131,6 @@ flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
 
 		return FLASH_ERROR;
 	}
-	FLASH->CR &= ~FLASH_PG;
 }
 
 
@@ -142,8 +140,14 @@ flash_status_t flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t lengt
 
 	for(int i = 0; i < length; i++){
 
-		flash_program_halfword(addr + (i * 2), data[i]);
+		flash_status_t status;
 
+		status = flash_program_halfword(addr + (i * 2), data[i]);
+
+		if(status != FLASH_OK)
+		{
+		    return status;
+		}
 	}
 	return FLASH_OK;
 }
