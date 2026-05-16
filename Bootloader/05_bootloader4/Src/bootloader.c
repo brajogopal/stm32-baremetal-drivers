@@ -12,6 +12,31 @@
 
 #define SYSCFG_EN (1U<<0)
 
+
+
+static void flash_handle_status(flash_status_t status)
+{
+	switch(status)
+	{
+	case FLASH_OK:
+		println("FLASH_OK");
+		break;
+
+	case FLASH_ERROR:
+		println("FLASH_ERROR");
+		break;
+
+	case FLASH_TIMEOUT:
+		println("FLASH_TIMEOUT");
+		break;
+
+	default:
+		println("UNKNOWN_FLASH_STATE");
+	}
+}
+
+
+
 void jmp_to_default_app(void) {
 	uint32_t app_start_address;
 	func_ptr jump_to_app;
@@ -38,6 +63,7 @@ void jmp_to_default_app(void) {
 		println("No valid application found");
 	}
 }
+
 
 
 int is_valid_app(uint32_t addr) {
