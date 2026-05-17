@@ -14,7 +14,8 @@ typedef enum{
     FLASH_ERROR,
     FLASH_TIMEOUT,
 	FLASH_PG_ERROR,
-	FLASH_WRP_ERROR
+	FLASH_WRP_ERROR,
+	FLASH_VERIFY_ERROR
 }flash_status_t;
 
 

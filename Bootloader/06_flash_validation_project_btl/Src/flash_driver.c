@@ -173,6 +173,10 @@ flash_status_t flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t lengt
 		{
 		    return status;
 		}
+		uint16_t value = *(__IO uint16_t*)(addr + (i * 2));
+		if(value != data[i]){
+			return FLASH_VERIFY_ERROR;
+		}
 	}
 	return FLASH_OK;
 }
