@@ -11,6 +11,7 @@
 #include "uart.h"
 
 #define TEST_FLASH_PAGE_ADDR  0x0800FC00
+#define TEST_FLASH_ALIGNMENT  0x0800FC01
 
 uint16_t test_data[] =
 {
@@ -29,7 +30,7 @@ void test_flash_erase(void){
 	if(flash_erase_page(TEST_FLASH_PAGE_ADDR) != FLASH_OK){
 		println("Flash Erase Failed");
 		flash_lock();
-		println("Flash Unlocked");
+		println("Flash locked");
 		return;
 	}
 
@@ -41,7 +42,7 @@ void test_flash_erase(void){
 		{
 			println("Erase verification failed");
 			flash_lock();
-			println("Flash Unlocked");
+			println("Flash locked");
 			return;
 		}
 	}
@@ -78,15 +79,94 @@ void test_flash_program(void){
 
 
 void test_alignment_error(void){
+	flash_unlock();
+	println("Flash Unlocked");
 
+	flash_status_t status;
+	println("Writing on the flash");
+
+	status = flash_program_buffer( TEST_FLASH_ALIGNMENT, test_data, 5);
+
+	if(status != FLASH_OK)
+	{
+	    println("Alignment Protection PASS");
+
+	    flash_lock();
+	    println("Flash Locked");
+
+	    return;
+	}	else	{
+		println("Alignment Protection FAIL");
+	}
+
+	flash_lock();
+	println("Flash locked");
 }
+
 
 
 void test_locked_flash(void){
 
+	flash_status_t status;
+	println("Writing on the flash");
+
+	status = flash_program_buffer( TEST_FLASH_PAGE_ADDR, test_data, 5);
+
+	if(status == FLASH_ERROR)
+	{
+	    println("FLASH_ERROR : Lock Protection PASS");
+
+	    flash_lock();
+	    println("Flash Locked");
+
+	    return;
+	}	else if(status == FLASH_PG_ERROR){
+		 println("FLASH PG ERROR");
+
+		 flash_lock();
+		 println("Flash Locked");
+		 return;
+	}
+		else if(status == FLASH_OK){
+		 println("Lock Protection FAIL");
+	}
+
+	flash_lock();
+	println("Flash locked");
 }
 
+
+void test_pg_error(void){
+	flash_status_t status;
+
+	flash_unlock();
+
+	if(flash_erase_page(TEST_FLASH_PAGE_ADDR) != FLASH_OK){
+		println("Flash Erase Failed");
+		flash_lock();
+		return;
+	}
+
+	if(flash_program_buffer(TEST_FLASH_PAGE_ADDR, test_data, 5) != FLASH_OK){
+		println("Initial program failed");
+		flash_lock();
+		return;
+	}
+
+	println("Programming without erase");
+	status = flash_program_buffer(TEST_FLASH_PAGE_ADDR, test_data, 5);
+
+	if(status == FLASH_PG_ERROR){
+		println("PGERR Protection PASS");
+	}	else if (status == FLASH_ERROR){
+		println("FLASH_ERROR Triggered");
+	}	else	{
+		println("PGERR Protection FAIL");
+	}
+	flash_lock();
+}
+
+
 void flash_test_run(void){
-	test_flash_erase();
-	test_flash_program();
+	test_pg_error();
 }

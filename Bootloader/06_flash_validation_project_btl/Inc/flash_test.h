@@ -13,5 +13,6 @@ void test_flash_erase(void);
 void test_flash_program(void);
 void test_alignment_error(void);
 void test_locked_flash(void);
+void test_pg_error(void);
 
 #endif /* FLASH_TEST_H_ */
