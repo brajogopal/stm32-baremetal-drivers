@@ -12,6 +12,7 @@
 
 void debug_uart_init(uint32_t baudrate);
 void println(const char *str);
-
+char uart_receive_char(void);
+void uart_receive_string(char *buffer, uint32_t max_length);
 
 #endif /* UART_H_ */

@@ -5,14 +5,16 @@
  *      Author: brajo
  */
 #include <stdint.h>
+#include <stdio.h>
 #include "uart.h"
 
 #define GPIOAEN		(1U<<17)
 #define USART2EN	(1U<<17)
-#define CR1_TE		(1U<<3)
+#define CR1_RE		(1U<<2)
 #define CR1_TE		(1U<<3)
 #define CR1_UE		(1U<<0)
 #define ISR_TXE		(1U<<7)
+#define UART_RXNE	(1U<<5)
 
 static uint16_t compute_uart_brr(uint32_t pclk, uint32_t baudrate);
 static uint32_t get_pclk1_freq(void);
@@ -37,7 +39,7 @@ void debug_uart_init(uint32_t baudrate){
 
 	RCC->APB1ENR |= USART2EN;
 	USART2->BRR = compute_uart_brr(get_pclk1_freq(), baudrate);
-	USART2->CR1 |= CR1_TE;
+	USART2->CR1 |= ( CR1_TE | CR1_RE );
 	USART2->CR1 |= CR1_UE;
 }
 
@@ -58,6 +60,33 @@ void println(const char *str)
     }
     uart_write('\r');
     uart_write('\n');
+}
+
+char uart_receive_char(void)
+{
+    while((USART2->ISR & UART_RXNE) == 0){}
+    return USART2->RDR;
+}
+
+void uart_receive_string(char *buffer, uint32_t max_length){
+	char ch;
+
+	for(int i = 0; i <  (max_length-1); i++){
+
+		ch = uart_receive_char();
+
+		/*Enter pressed*/
+		if((ch == '\n') || (ch == '\r')){
+			buffer[i] = '\0';
+			printf("\r\n");
+			return;
+		}
+
+		buffer[i] = ch;				//store char in buffer
+		uart_write(buffer[i]);	//Echo character
+	}
+		/* Prevent overflow */
+	    buffer[max_length - 1] = '\0';
 }
 
 /* Compute USART BRR value (oversampling by 16) */
