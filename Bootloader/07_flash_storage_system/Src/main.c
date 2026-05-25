@@ -17,9 +17,7 @@
 
 storage_data_t data =
 {
-    .magic_number = 0xDEADBEEF,
-    .boot_count = 10,
-    .firmware_version = 1
+    .magic_number = 0xDEADBEEF
 };
 
 storage_data_t load_data;
@@ -31,13 +29,13 @@ static void update_metadata(storage_data_t *data);
 
 int main() {
 	debug_uart_init(9600);
-
+/*
 	flash_status_t status = storage_save(&data);
 	if(status != FLASH_OK){
 		println("flash_save function failed");
 		while(1);
-	}
-
+	}*/
+	flash_status_t status;
 	status = storage_load(&load_data);
 	if(status != FLASH_OK){
 		println("flash_load function failed");
@@ -108,7 +106,47 @@ static void update_metadata(storage_data_t *data){
 		return;
 	} else {
 		println("ENTER MAGIC NUMBER MATCHED");
-		println("thats it for today tomorrow i will continue");
+		println(" ");
+		println("=====================================");
+		println(" ");
+		println("ENTER BOOT COUNT :");
+		println(" ");
+		println("=====================================");
+		char boot_count_buff[8];
+		uart_receive_string(boot_count_buff, 8);
+		uint32_t entered_boot;
+		entered_boot =strtoul(boot_count_buff, NULL, 10);
+		data->boot_count = entered_boot;
+
+
+
+
+				println("=====================================");
+				println(" ");
+				println("ENTER FIRMWARE VERSION :");
+				println(" ");
+				println("=====================================");
+				char version_buff[8];
+				uart_receive_string(version_buff, 8);
+				uint32_t entered_version;
+				entered_version =strtoul(version_buff, NULL, 10);
+				data->firmware_version = entered_version;
+				flash_status_t status = storage_save(data);
+				if(status != FLASH_OK){
+						println("flash_save function failed");
+						while(1);
+				}
+				println(" ");
+				println("SAVED NEW BOOT COUNT & FIRMWARE VERSION");
+
+
+				status = storage_load(&load_data);
+					if(status != FLASH_OK){
+						println("flash_load function failed");
+						while(1);
+					}
+					println("UPDATED : ");
+					view_metadata(&load_data);
 		return;
 	}
 }
