@@ -1,31 +1,19 @@
-#include "stm32f030x8.h"
-#include "delay.h"
-#include "uart.h"
-#include "bsp.h"
-#include "bootloader.h"
-#include "flash_driver.h"
-#include "storage_manager.h"
-#include <stdio.h>
+/*
+ * metadata.c
+ *
+ *  Created on: 26-May-2026
+ *      Author: brajo
+ */
+#include "metadata.h"
 #include <stdlib.h>
+#include "uart.h"
 
-#define UART_RXNE	(1U<<5)
 
-storage_data_t data = { .magic_number = 0xDEADBEEF };
-
+storage_data_t data = { .magic_number = STORAGE_MAGIC };
 storage_data_t load_data;
 
-static void menu(void);
-static void view_metadata(storage_data_t *data);
-static void update_metadata(storage_data_t *data);
+void condition_check(void){
 
-int main() {
-	debug_uart_init(9600);
-	/*
-	 flash_status_t status = storage_save(&data);
-	 if(status != FLASH_OK){
-	 println("flash_save function failed");
-	 while(1);
-	 }*/
 	flash_status_t status;
 	status = storage_load(&load_data);
 	if (status != FLASH_OK) {
@@ -51,12 +39,10 @@ int main() {
 	else {
 		println("Invalid Option");
 	}
-
-	while (1) {
-	}
 }
 
-static void view_metadata(storage_data_t *data) {
+
+void view_metadata(storage_data_t *data) {
 	printf("magic number = 0x%08lX\r\n", data->magic_number);
 
 	printf("boot count = %lu\r\n", data->boot_count);
@@ -64,7 +50,7 @@ static void view_metadata(storage_data_t *data) {
 	printf("firmware version = %lu\r\n", data->firmware_version);
 }
 
-static void update_metadata(storage_data_t *data) {
+void update_metadata(storage_data_t *data) {
 	println("=====================================");
 	println(" ");
 	println("ENTER MAGIC NUMBER (HEX):");
@@ -123,7 +109,7 @@ static void update_metadata(storage_data_t *data) {
 	}
 }
 
-static void menu(void) {
+void menu(void) {
 	println("=====================================");
 	println("=====================================");
 	println("=====================================");
