@@ -256,6 +256,10 @@ Added transmission delay in RealTerm.
 - Binary transfers differ from ASCII transfers.
 - Transport framing simplifies firmware reception.
 - Debug prints greatly accelerate embedded debugging.
+- Major Lesson: Length field semantics must be clearly defined.
+  Final Decision:
+  Length = Payload Size In Bytes
+
 
 ---
 
@@ -305,6 +309,28 @@ Goals:
 - Improved bootloader reliability
 
 ---
+
+## Repository Structure
+
+screenshots/
+- UART communication validation
+- Flash memory verification
+
+test_files/
+- Header_Test.bin
+- Test packet used during validation
+
+Src/
+- Application source files
+
+Inc/
+- Header files
+
+Startup/
+- Startup code
+
+Binaries/
+- Build outputs
 
 ## Project Status
 
