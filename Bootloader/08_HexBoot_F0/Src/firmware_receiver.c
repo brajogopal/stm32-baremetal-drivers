@@ -29,10 +29,13 @@ uart_status_t reconstruct_halfword_timeout(uint16_t *data,uint32_t timeout)
     uint8_t high;
     uart_status_t status;
 
+
     status = uart_receive_with_timeout(&low, timeout);
     if(status != UART_OK){
     	return status;
     	}
+
+
 
     status = uart_receive_with_timeout(&high, timeout);
     if(status != UART_OK){
@@ -53,8 +56,7 @@ flash_status_t firmware_receive_chunk(uint32_t addr,uint16_t *data, uint32_t len
 	for(int i=0; i<length; i++){
 		uart_status_t status;
 		status = reconstruct_halfword_timeout(&data[i], timeout);
-		//data[i] = reconstruct_halfword();
-		if(status == UART_TIMEOUT)
+		if(status != UART_OK)
 		{
 		    println("RX Timeout");
 		    return FLASH_ERROR;
