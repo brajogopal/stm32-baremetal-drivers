@@ -1,5 +1,12 @@
 # 08_HexBoot_F0
 
+STM32F030 UART Firmware Transport Layer
+
+Status: FROZEN
+
+Milestone:
+Header + Variable Length Firmware Receiver
+
 ## Objective
 
 Build a firmware transport layer from scratch using STM32F030 register-level programming.
