@@ -1,0 +1,13 @@
+header_test.bin
+
+Packet Format:
+Header  : 0xAA
+Length  : 0x0008 (8 bytes)
+Payload : 11 22 33 44 55 66 77 88
+
+Expected Reconstruction:
+
+0x2211
+0x4433
+0x6655
+0x8877
