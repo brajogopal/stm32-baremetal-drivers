@@ -1,0 +1,67 @@
+Project : 09_HexBoot_F0_CRC
+
+Objective:
+Add CRC16 validation before programming firmware into Flash.
+
+Changes from 08_HexBoot_F0_ByteBuffer:
+- Added CRC16 module (crc.c / crc.h)
+- Added CRC field in packet format
+- CRC validation is performed before Flash programming
+- Corrupted firmware is rejected
+
+CRC Configuration:
+- CRC Type      : CRC16
+- Polynomial    : 0x1021
+- Initial Value : 0xFFFF
+- Direction     : MSB First
+
+Packet Format:
+Byte 0      : Header (0xAA)
+Byte 1-2    : Payload Length (bytes)
+Byte N      : Payload Data
+Byte N+1-2  : CRC16
+
+CRC Flow:
+Receive Header
+Receive Length
+Receive Payload
+Receive CRC
+Calculate CRC
+Compare CRC
+
+If CRC Match:
+    -> Program Flash
+Else:
+    -> Reject Firmware
+
+Important Learning:
+CRC is not stored with every byte.
+One CRC is calculated for the entire payload.
+
+CRC16 remainder length = 16 bits.
+
+MSB-first CRC implementation:
+CRC ^= ((uint16_t)data[i] << 8)
+
+if(crc & 0x8000)
+{
+    crc <<= 1;
+    crc ^= CRC16_POLY;
+}
+else
+{
+    crc <<= 1;
+}
+
+Testing:
+PASS Test:
+- CRC_Test_Valid.bin
+- Firmware Update successful
+
+FAIL Test:
+- CRC_Test_Invalid.bin
+- CRC verification failed
+- Corrupted data detected
+
+Project Status:
+Frozen

@@ -1,0 +1,58 @@
+08_HexBoot_F0_ByteBuffer
+
+Goal:
+Migrate firmware reception from uint16_t halfword-based transport to uint8_t byte-based transport.
+
+Key Changes:
+
+1. Removed reconstruct_halfword() from firmware payload reception path.
+2. Firmware is now received as raw bytes.
+3. Payload is stored in:
+   uint8_t firmware_buffer[128];
+4. Flash programming is performed using:
+   (uint16_t*)firmware_buffer
+5. Payload length is interpreted as bytes.
+6. Added validation:
+
+   * Payload length must be even.
+   * Payload length must not exceed 128 bytes.
+
+Packet Format:
+
+HEADER      : 0xAA
+LENGTH      : Payload Length (Bytes)
+PAYLOAD     : Firmware Data
+
+Example Test Packet:
+
+AA
+08 00
+11 22 33 44 55 66 77 88
+
+Expected UART Output:
+
+[00] = 0x11
+[01] = 0x22
+[02] = 0x33
+[03] = 0x44
+[04] = 0x55
+[05] = 0x66
+[06] = 0x77
+[07] = 0x88
+
+Expected Flash Memory:
+
+Address: 0x0800F800
+
+11 22 33 44 55 66 77 88
+
+Lessons Learned:
+
+* UART naturally transfers bytes.
+* Firmware .bin files are byte streams.
+* CRC algorithms operate on byte streams.
+* Flash programming requirements should remain inside the Flash layer.
+* Type casting allows the same buffer to be viewed as uint8_t or uint16_t without copying data.
+
+Next Project:
+09_HexBoot_F0_CRC
