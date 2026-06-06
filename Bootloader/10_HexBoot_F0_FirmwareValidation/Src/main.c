@@ -4,11 +4,13 @@
 #include "bsp.h"
 #include "bootloader.h"
 #include "flash_driver.h"
-#include "storage_manager.h"
 #include "metadata.h"
 #include "firmware_receiver.h"
 #include "crc.h"
 #include <stdio.h>
+
+
+
 
 #define TEST_STORAGE_ADDR   0x0800F800
 #define UART_TIMEOUT_LONG 10000000UL

@@ -14,7 +14,12 @@
 #define SYSCFG_EN (1U<<0)
 
 
-
+/*---------------------------------------------------
+ *
+ * Reserved for Project 10+ architecture.
+ * Unused in this project.
+ * Kept for future bootloader status handling.
+ *
 static void flash_handle_status(flash_status_t status)
 {
 	switch(status)
@@ -35,7 +40,7 @@ static void flash_handle_status(flash_status_t status)
 		println("UNKNOWN_FLASH_STATE");
 	}
 }
-
+-----------------------------------------------*/
 
 
 void jmp_to_default_app(void) {

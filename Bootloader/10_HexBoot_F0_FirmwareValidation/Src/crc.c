@@ -6,9 +6,8 @@
  */
 
 #include "crc.h"
-#include "stm32f030x8.h"
 #include <stdint.h>
-#include <stdio.h>
+
 
 uint16_t crc16_calculate(uint8_t *data, uint32_t length){
 

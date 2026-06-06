@@ -8,16 +8,26 @@
 #ifndef METADATA_H_
 #define METADATA_H_
 
-#include "flash_driver.h"
-#include "storage_manager.h"
-#include "stm32f030x8.h"
 #include <stdint.h>
 
+#define METADATA_A_ADDRESS     0x08004000U
+#define APPLICATION_A_ADDRESS  0x08004020U	//24KB
+
+#define METADATA_B_ADDRESS     0x0800A000U
+#define APPLICATION_B_ADDRESS  0x0800A020U	//24KB
+
+#define APP_MAGIC 0xDEADBEEF
+
+typedef struct
+{
+    uint32_t magic_number;
+    uint32_t firmware_length;
+    uint16_t firmware_crc;
+    uint16_t reserved;
+} firmware_metadata_t;
 
 
-void menu(void);
-void view_metadata(storage_data_t *data);
-void update_metadata(storage_data_t *data);
-void condition_check(void);
+flash_status_t metadata_write(firmware_metadata_t *metadata);
+flash_status_t metadata_read(firmware_metadata_t *metadata);
 
 #endif /* METADATA_H_ */
