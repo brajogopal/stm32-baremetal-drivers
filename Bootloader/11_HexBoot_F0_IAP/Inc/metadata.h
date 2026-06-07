@@ -27,8 +27,14 @@ typedef struct
     uint16_t reserved;
 } firmware_metadata_t;
 
+typedef enum
+{
+    METADATA_SLOT_A = 0,
+    METADATA_SLOT_B
+} metadata_slot_t;
 
-flash_status_t metadata_write(firmware_metadata_t *metadata);
-void metadata_read(firmware_metadata_t *metadata);
+
+flash_status_t metadata_write(metadata_slot_t slot, firmware_metadata_t *metadata);
+void metadata_read(metadata_slot_t slot, firmware_metadata_t *metadata);
 
 #endif /* METADATA_H_ */

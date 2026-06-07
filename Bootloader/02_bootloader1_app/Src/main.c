@@ -1,24 +1,18 @@
 
 
 #include "stm32f030x8.h"
-#include "delay.h"
-#include "uart.h"
-#include "bsp.h"
-#include <stdio.h>
+
+#define GPIOAEN       (1U<<17)
+#define PIN5          (1U<<5)
+#define LED_PIN       PIN5
 
 
-
-
-int main(void){
-	pinMode(PA5,OUTPUT);
-	systick_init();
-	debug_uart_init(9600);
-
+int main (void){
+	RCC->AHBENR |= GPIOAEN;
+	GPIOA->MODER |= (1U<<10);
+	GPIOA->MODER &=~ (1U<<11);
 	while(1){
-		println("Application new Running..\n\r");
-		digitalWrite(PA5,HIGH);
-		systick_delay(500);
-		digitalWrite(PA5,LOW);
-		systick_delay(500);
+		GPIOA->ODR ^=LED_PIN;
+		for(int i=0 ;i<100000; i++){}
 	}
 }

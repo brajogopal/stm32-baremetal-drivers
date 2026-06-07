@@ -78,7 +78,7 @@ int main() {
 		println("Firmware Receive Failed");
 		while (1);
 	} else {
-		printf("Firmware Receive successful");
+		println("Firmware Receive successful");
 	}
 
 
@@ -114,22 +114,11 @@ int main() {
 			metadata.firmware_length = payload_length_bytes;
 			metadata.firmware_crc = calculated_crc;
 
-			flash_status = metadata_write(&metadata);
+			flash_status = metadata_write(METADATA_SLOT_A,&metadata);
 			flash_handle_status(flash_status);
-
-
-
-			/*--------- Validating Stored Metadata --------*/
-			metadata_read(&metadata);
-
-			printf("magic_number: 0x%08X\r\n",
-					(unsigned int) metadata.magic_number);
-			printf("firmware_length: 0x%08X\r\n",
-					(unsigned int) metadata.firmware_length);
-			printf("firmware_crc: 0x%04X\r\n", metadata.firmware_crc);
-
 		}
 
+		 jmp_to_app(APPLICATION_A_ADDRESS);
 	}
 	else {
 		println("CRC verification failed");

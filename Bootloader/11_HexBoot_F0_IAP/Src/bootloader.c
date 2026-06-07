@@ -41,21 +41,22 @@ void flash_handle_status(flash_status_t status)
 
 
 
-void jmp_to_default_app(void) {
-	uint32_t app_start_address;
+
+
+void jmp_to_app(uint32_t app_address) {
 	func_ptr jump_to_app;
 	println("bootloader started..");
 	delay_ms(300);
 
-	if (is_valid_app(APPLICATION_ADDRESS)) {
+	if (is_valid_app(app_address)) {
 
 		__disable_irq();
-		relocate_vector_table();
+		relocate_vector_table(app_address);
 
 		/*Initialize main stack pointer */
-		__set_MSP(*(uint32_t*) APPLICATION_ADDRESS);
+		__set_MSP(*(uint32_t*) app_address);
 
-		app_start_address = *(uint32_t*) (APPLICATION_ADDRESS + 4);
+		uint32_t app_start_address = *(uint32_t*) (app_address + 4);
 		jump_to_app = (func_ptr) (app_start_address);
 		println("valid application present..");
 
@@ -68,14 +69,22 @@ void jmp_to_default_app(void) {
 	}
 }
 
-
-
 int is_valid_app(uint32_t addr) {
 	uint32_t msp = *(uint32_t*) addr;
 	uint32_t reset = *(uint32_t*) (addr + 4);
-	firmware_metadata_t metadata;
-	metadata_read(&metadata);
 
+
+	firmware_metadata_t metadata;
+	if(addr == APPLICATION_A_ADDRESS){
+	metadata_read(METADATA_SLOT_A,&metadata);
+	}
+	else if(addr == APPLICATION_B_ADDRESS){
+	metadata_read(METADATA_SLOT_B,&metadata);
+	}
+	else	{
+		println("Invalid Application Address");
+		 return 0;
+	}
 
 	// MSP must be in SRAM
 	if (msp < SRAM_START || msp > SRAM_END){
@@ -103,11 +112,11 @@ int is_valid_app(uint32_t addr) {
 
 
 
-void relocate_vector_table(void) {
-	uint32_t *src = (uint32_t*) APPLICATION_ADDRESS;
+void relocate_vector_table(uint32_t app_address) {
+	uint32_t *src = (uint32_t*) app_address;
 	uint32_t *dst = (uint32_t*) SRAM_START;
 
-	for (int i = 0; i < VECTOR_COUNT; i++) {   // copying of vectors
+	for (uint32_t i = 0; i < VECTOR_COUNT; i++) {   // copying of vectors
 		dst[i] = src[i];
 	}
 

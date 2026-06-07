@@ -11,8 +11,6 @@
 #include <stdint.h>
 #include "flash_driver.h"
 
-#define SYSCFG_EN					(1U<<0)
-#define APPLICATION_ADDRESS			0x08007000U
 #define VECTOR_COUNT 				48
 
 #define SRAM_START					0x20000000U
@@ -24,8 +22,8 @@
 
 typedef void (*func_ptr)(void);
 int is_valid_app(uint32_t addr);
-void relocate_vector_table(void);
-void jmp_to_default_app(void);
+void relocate_vector_table(uint32_t app_address);
+void jmp_to_app(uint32_t app_address);
 void flash_handle_status(flash_status_t status);
 
 
