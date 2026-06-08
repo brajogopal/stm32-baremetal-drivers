@@ -21,7 +21,7 @@ int main() {
 	uint16_t payload_length_bytes;
 	uint16_t received_crc;
 	uint16_t halfword_count;
-	uint8_t firmware_buffer[128];
+	uint8_t firmware_buffer[2048];
 	uint16_t calculated_crc;
 
 	println("Ready to receive Firmware");
@@ -36,7 +36,8 @@ int main() {
 
 	uart_status = uart_receive_with_timeout(&header, UART_TIMEOUT_LONG);
 	if (uart_status != UART_OK) {
-		println("Firmware Header Receive Failed");
+		println("UART Timeout");
+		jmp_to_app(APPLICATION_A_ADDRESS);
 		while (1);
 	} else {
 		println("Firmware Header Receive successful");
@@ -63,7 +64,7 @@ int main() {
 
 
 
-	if ((payload_length_bytes % 2 != 0) || (payload_length_bytes > 128)) {
+	if ((payload_length_bytes % 2 != 0) || (payload_length_bytes > 2048)) {
 		println("Invalid Payload Length");
 		while (1);
 	}
