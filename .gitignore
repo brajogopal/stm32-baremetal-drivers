@@ -87,4 +87,4 @@ sysmem.c
 !Bootloader/**/*.ld
 !Bootloader/**/*.s
 !Bootloader/*.md
-!Bootloader/**/Startup/test_files/*.bin
+!**/test_files/*.bin
