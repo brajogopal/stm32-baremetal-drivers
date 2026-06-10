@@ -10,6 +10,8 @@
 #include "flash_driver.h"
 #include <stdio.h>
 
+#define FLASH_PAGE_SIZE		0x400U	// 1KB
+
 
 uint16_t reconstruct_halfword(void)
 {
@@ -61,11 +63,6 @@ uart_status_t firmware_receive_chunk(uint32_t addr,uint16_t *data, uint32_t leng
 		    println("RX Timeout");
 		    return status;
 		}
-		else
-		{
-		printf("[%02d] = ",i);
-		printf("0x%04X\r\n", data[i]);	//Echo character
-		}
 	}
 	return UART_OK;
 }
@@ -84,11 +81,6 @@ uart_status_t firmware_receive_8bit(uint32_t addr,uint8_t *data, uint32_t length
 	    	    println("RX Timeout");
 	    	    return status;
 	   		}
-	    else
-	    	{
-	   		printf("[%02d] = ",i);
-	    	printf("0x%02X\r\n", data[i]);	//Echo character
-	    	}
 	}
 	return UART_OK;
 
@@ -102,23 +94,43 @@ flash_status_t store_data_in_flash(uint32_t addr,uint16_t *data, uint32_t length
 	flash_status_t status;
 	status = flash_unlock();
 	if(status != FLASH_OK){
-			flash_lock();
-			return status;
+		flash_lock();
+		println("Flash unlocked failed");
+		return status;
 		}
 
 
-	status = flash_erase_page(addr);
-	if(status != FLASH_OK){
-			flash_lock();
-			return status;
-		}
+
+	/*-------------- Dynamic Flash Erased -------------*/
+	uint32_t firmware_size_bytes, total_flash_space_required, number_of_pages_to_erase;
+
+    firmware_size_bytes = length * 2;
+
+    total_flash_space_required = firmware_size_bytes + (FLASH_PAGE_SIZE - 1);
+
+	number_of_pages_to_erase = total_flash_space_required / FLASH_PAGE_SIZE;
+
+	    for(uint32_t page_index = 0; page_index < number_of_pages_to_erase; page_index++)
+	    {
+	        status = flash_erase_page(addr + (page_index * FLASH_PAGE_SIZE));
+
+	        if(status != FLASH_OK)
+	        {
+	        	flash_lock();
+	            return status;
+	        }
+	    }
+
+
+
 
 
 	status = flash_program_buffer(addr, data, length);
 	if(status != FLASH_OK){
-				flash_lock();
-				return status;
-			}
+		flash_lock();
+		println("Flash Write Failed");
+		return status;
+		}
 
 
 	flash_lock();

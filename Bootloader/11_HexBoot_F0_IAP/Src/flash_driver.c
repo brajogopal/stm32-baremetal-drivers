@@ -163,7 +163,7 @@ flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
 flash_status_t flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t length){
 
 	flash_clear_flags();
-	for(int i = 0; i < length; i++){
+	for(uint32_t i = 0; i < length; i++){
 
 		flash_status_t status;
 

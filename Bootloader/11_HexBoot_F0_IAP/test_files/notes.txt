@@ -1,44 +1,59 @@
-Project : 10_HexBoot_F0_FirmwareValidation
+Project : 11_HexBoot_F0_IAP
 
-Objective:
-Store firmware metadata after successful CRC verification
-and verify metadata can be read back correctly from Flash.
+Description:
+This project demonstrates a complete In-Application Programming (IAP)
+bootloader on STM32F030C8T6 using register-level programming.
 
-Metadata Structure:
-- APP_MAGIC       : 0xDEADBEEF
-- Firmware Length : uint32_t
-- Firmware CRC    : uint16_t
+Features Implemented:
+- UART firmware reception
+- Custom firmware packet format
+- CRC16 firmware verification
+- Flash programming
+- Firmware metadata storage
+- Application validation using metadata
+- Multi-page flash erase support
+- Automatic jump to valid application
+- UART timeout handling
 
-Flash Layout:
-0x08004000 : Metadata
-0x08004020 : Application
+Firmware Packet Format:
+------------------------------------------------
+| Header (1 Byte) | Length (2 Bytes) |
+------------------------------------------------
+| Firmware Payload (N Bytes)          |
+------------------------------------------------
+| CRC16 (2 Bytes)                     |
+------------------------------------------------
 
-Test Payload:
-11 22 33 44 55 66 77 88
+Memory Map:
+Bootloader          : 0x08000000
+Metadata            : 0x08004000
+Application A       : 0x08004020
 
-Expected Results:
-Firmware Length : 8 Bytes
-Firmware CRC    : 0x5DB5
+Test Files:
+11_Hexboot_F0_TEST_Packet.bin
+    - Main firmware update test
 
-Verification Steps:
-1. Receive firmware through UART.
-2. Verify CRC.
-3. Store firmware in Flash.
-4. Create metadata.
-5. Store metadata in Flash.
-6. Read metadata back from Flash.
-7. Print metadata through UART.
-8. Verify stored values match expected values.
+11_Hexboot_F0_TEST_packet_LED_blink.bin
+    - LED blink application test
 
-Observed Results:
-magic_number    : 0xDEADBEEF
-firmware_length : 0x00000008
-firmware_crc    : 0x5DB5
+Screenshots:
+01_IAP_Successful_Firmware_Update.png
+02_Application_And_Metadata_In_Flash.png
 
-Status:
-PASS
+Important Learning:
+- Flash pages must be erased before programming.
+- Firmware larger than one flash page requires
+  multiple page erase operations.
+- Application validation is performed using metadata.
+- CRC verifies firmware integrity before programming.
 
-Limitations:
-- Metadata validation demonstrated through Flash readback.
-- Boot-time application validation and jump logic will be integrated in Project 11.
-- Single application slot architecture.
+Known Limitation:
+Entire firmware is stored in RAM before flash
+programming.
+
+Next Project:
+12_HexBoot_F0_IAP_Advanced
+
+Goal:
+Implement chunk-based firmware programming
+instead of storing the entire firmware in RAM.

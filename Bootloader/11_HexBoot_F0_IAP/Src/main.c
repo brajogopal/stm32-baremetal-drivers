@@ -21,6 +21,11 @@ int main() {
 	uint16_t payload_length_bytes;
 	uint16_t received_crc;
 	uint16_t halfword_count;
+
+	/* Project 11:
+	 * Entire firmware is stored in RAM before Flash programming.
+	 * Project 12 will replace this with chunk-based programming.
+	 */
 	uint8_t firmware_buffer[2048];
 	uint16_t calculated_crc;
 
