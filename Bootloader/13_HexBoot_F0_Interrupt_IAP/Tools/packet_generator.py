@@ -1,7 +1,7 @@
 import os
 import struct
 
-HEADER = 0xAA
+HEADER = 0xAA  # Must match bootloader
 
 
 def crc16_ccitt(data):
@@ -30,17 +30,16 @@ crc = crc16_ccitt(firmware_data)
 
 packet = bytearray()
 
-# Header
 packet.append(HEADER)
 
-# Length (uint16 little-endian)
+# Length
 packet.extend(struct.pack("<H", firmware_length))
-
-# Payload
-packet.extend(firmware_data)
 
 # CRC
 packet.extend(struct.pack("<H", crc))
+
+# Payload
+packet.extend(firmware_data)
 
 output_file = os.path.splitext(input_file)[0] + "_packet.bin"
 

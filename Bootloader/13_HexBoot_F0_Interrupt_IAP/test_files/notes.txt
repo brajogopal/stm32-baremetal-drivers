@@ -1,16 +1,47 @@
-Lessons Learned
+# Project 13 Test Firmware Notes
 
-1. Entire firmware does not need to be stored in RAM.
+## Purpose:
 
-2. Flash memory is memory mapped and can be accessed
-   directly using pointers.
+This firmware image was used to validate the UART Interrupt Firmware Receiver (Project 13).
 
-3. CRC can be calculated directly from Flash memory.
+## Test Procedure:
 
-4. Dynamic page erase is required when firmware size
-   exceeds a single page.
+1. Build the test application.
+2. Generate packet using packet_generator.py.
+3. Open RealTerm.
+4. Configure UART:
 
-5. Flash programming time affects UART reception timing.
+   * Baud Rate: 9600
+   * Data Bits: 8
+   * Stop Bits: 1
+   * Parity: None
+5. Send generated *_packet.bin file.
+6. Verify:
 
-6. Chunk-based programming scales better than
-   full-buffer programming.
+   * Flash programming succeeds
+   * CRC verification passes
+   * Metadata is generated
+   * Bootloader jumps to application
+
+## Packet Format:
+
++--------+----------+--------+-------------+
+| Header | Length   | CRC16  | Payload     |
++--------+----------+--------+-------------+
+
+Header  : 0xAA
+Length  : 2 Bytes (Little Endian)
+CRC16   : CRC16-CCITT
+Payload : Firmware Binary
+
+## Known Limitation:
+
+This version uses a single receive buffer.
+UART interrupts are disabled during flash programming to prevent buffer corruption.
+
+## Future Improvements:
+
+* Ping-Pong Buffer (Project 14)
+* DMA Reception
+* ACK/NACK Protocol
+* Continuous Streaming IAP

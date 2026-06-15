@@ -1,324 +1,243 @@
-# Project 12 - HexBoot F0 Streaming IAP Bootloader
+# Project 13: UART Interrupt Firmware Receiver
 
 ## Overview
 
-Project 12 introduces chunk-based firmware programming for the STM32F030 bootloader.
+Project 13 introduces interrupt-driven UART firmware reception for the HexBoot_F0 bootloader.
 
-In previous versions, the entire firmware image was received before being programmed into Flash. In this project, firmware is received in fixed-size chunks and programmed immediately after reception.
+Unlike previous implementations that relied on polling, this project uses UART receive interrupts to asynchronously receive firmware data and store it into RAM before programming it into Flash memory.
 
-This approach significantly reduces RAM usage and prepares the bootloader architecture for future packet-based firmware update protocols.
-
----
-
-## Target MCU
-
-* STM32F030C8T6
-* Cortex-M0
-* Register-Level Programming
-* No HAL
-* No CubeMX
+This project represents the transition from peripheral-level programming to embedded system design concepts such as interrupt handling, chunked data transfer, firmware protocols, and bootloader architecture.
 
 ---
 
-## New Features Compared to Project 11
+## Features
 
-### Project 11
-
-* Entire firmware received before programming
-* Firmware stored in RAM before Flash programming
-* Single programming operation
-
-### Project 12
-
-* Firmware received in 128-byte chunks
-* Each chunk programmed immediately
-* Dynamic Flash erase based on firmware size
-* Flash verification after each chunk programming
-* CRC calculated directly from Flash memory
-* Reduced RAM usage
-* Streaming firmware update architecture
-
----
-
-## Memory Layout
-
-### Flash Memory
-
-| Region        | Address    |
-| ------------- | ---------- |
-| Bootloader    | 0x08000000 |
-| Metadata      | 0x08004000 |
-| Application A | 0x08004020 |
-
+* UART interrupt-driven firmware reception
+* Chunk-based Flash programming
+* CRC16-CCITT firmware verification
+* Metadata generation and application validation
+* Automatic jump to application after successful update
+* Support for partial final firmware chunks
+* Firmware packet protocol with header and length validation
 
 ---
 
 ## Firmware Packet Format
 
-| Field            | Size    |
-| ---------------- | ------- |
-| Header           | 1 Byte  |
-| Firmware Length  | 2 Bytes |
-| Firmware Payload | N Bytes |
-| CRC16            | 2 Bytes |
-
-### Header Value
+The bootloader expects firmware packets in the following format:
 
 ```text
-0xAA
++--------+----------+--------+-------------+
+| Header | Length   | CRC16  | Payload     |
++--------+----------+--------+-------------+
+
+Header  : 1 Byte
+Length  : 2 Bytes (Little Endian)
+CRC16   : 2 Bytes (Little Endian)
+Payload : Firmware Binary
 ```
+
+### Example
+
+```text
+AA 2C 02 D0 E4 <Firmware Data ...>
+```
+
+where:
+
+* `AA` → Header
+* `0x022C` → Firmware length (556 bytes)
+* `0xE4D0` → CRC16-CCITT
 
 ---
 
-## Firmware Update Flow
+## Bootloader Flow
 
 ```text
-Receive Header
-        ↓
-Receive Firmware Length
-        ↓
-Erase Required Flash Pages
-        ↓
-Receive Chunk
-        ↓
-Program Chunk
-        ↓
-Verify Chunk
-        ↓
-Repeat Until Firmware Complete
-        ↓
-Receive CRC16
-        ↓
-Calculate CRC16 From Flash
-        ↓
-Compare CRC Values
-        ↓
-Write Metadata
-        ↓
+Receive Header (Polling)
+            ↓
+Validate Header
+            ↓
+Receive Payload Length (Polling)
+            ↓
+Receive Expected CRC16 (Polling)
+            ↓
+Validate Firmware Size
+            ↓
+Erase Flash Region
+            ↓
+Enable UART Interrupt
+            ↓
+Receive Firmware Chunks
+            ↓
+Program Flash
+            ↓
+Receive Final Chunk
+            ↓
+Calculate CRC over Flash
+            ↓
+CRC Match?
+      ↓ Yes           ↓ No
+Update Metadata     Reject Firmware
+      ↓
 Jump To Application
 ```
 
 ---
 
-## Chunk Configuration
-
-```c
-#define CHUNK_SIZE 128
-```
-
-### Operation
+## UART Interrupt Architecture
 
 ```text
-Receive 128 Bytes
-        ↓
-Program Flash
-        ↓
-Verify Flash
-        ↓
-Receive Next Chunk
+PC UART Sender
+       ↓
+USART2 RX Interrupt
+       ↓
+RAM Buffer (128 Bytes)
+       ↓
+Chunk Ready Flag
+       ↓
+Flash Programming
 ```
-
-The final chunk can be smaller than 128 bytes and is handled automatically.
 
 ---
 
-## Flash Verification
+## Chunk-Based Reception
 
-After programming each chunk:
+Firmware is received in fixed-size chunks:
 
 ```text
-Read Flash Data
-        ↓
-Compare With Received Buffer
-        ↓
-Pass / Fail
+CHUNK_SIZE = 128 Bytes
 ```
 
-This ensures that programmed data matches received data before continuing.
+Each chunk is programmed to Flash immediately after reception.
+
+The final chunk may be smaller than 128 bytes and is automatically handled using the received payload length.
 
 ---
 
 ## CRC Verification
 
-CRC is calculated directly from Flash memory after the entire firmware image has been programmed.
+CRC Algorithm:
 
-Example:
+```text
+CRC16-CCITT
+Polynomial : 0x1021
+Initial CRC: 0xFFFF
+```
+
+The CRC is calculated over the programmed firmware stored in Flash memory.
+
+This verifies:
+
+* UART transmission integrity
+* Flash programming integrity
+
+---
+
+## Memory Layout
+
+```text
+Bootloader Region
+┌──────────────────────┐
+│ Bootloader           │
+├──────────────────────┤
+│ Metadata             │
+├──────────────────────┤
+│ Application A        │
+│ Firmware Image       │
+└──────────────────────┘
+```
+
+---
+
+## Design Decisions
+
+### Interrupt-Driven Payload Reception
+
+Small metadata fields are received using blocking UART:
+
+* Header
+* Payload Length
+* CRC16
+
+Firmware payload is received using UART interrupts.
+
+This keeps the interrupt path dedicated to high-volume data transfer.
+
+---
+
+## Known Limitations
+
+This project intentionally uses a single receive buffer.
+
+During Flash programming:
 
 ```c
-calculated_crc =
-    crc16_calculate(
-        (uint8_t*)APPLICATION_A_ADDRESS,
-        payload_length_bytes);
+__disable_irq();
+
+/* Flash programming */
+
+__enable_irq();
 ```
 
-This verifies the actual contents stored in Flash rather than only the received UART data.
+Interrupts are temporarily disabled to prevent UART data from overwriting the active receive buffer.
 
----
+### Limitation
 
-## Metadata Structure
+Continuous high-speed streaming is not supported in this version.
 
-Metadata is written after successful CRC verification.
-
-Stored Information:
-
-* Application Magic Number
-* Firmware Length
-* Firmware CRC
-
-Example:
-
-```text
-Magic Number    : 0xDEADBEEF
-Firmware Length : 1792 Bytes
-Firmware CRC    : 0x3548
-```
-
----
-
-## Test Results
-
-### Test 1
-
-Firmware Size:
-
-```text
-556 Bytes
-```
-
-Result:
-
-```text
-PASS
-```
-
-### Test 2
-
-Firmware Size:
-
-```text
-1792 Bytes
-```
-
-Result:
-
-```text
-PASS
-```
-
-### Verification Results
-
-```text
-Flash Programming     PASS
-Flash Verification    PASS
-CRC Verification      PASS
-Metadata Update       PASS
-Application Boot      PASS
-```
-
----
-
-## Screenshots
-
-Included in:
-
-```text
-screenshots/
-```
-
-Contains:
-
-* Successful 556-byte firmware update
-* Successful 1792-byte firmware update
-* Chunk programming debug output
-* Flash memory view
-* Metadata verification
-
----
-
-## Tools
-
-Included in:
-
-```text
-Tools/
-```
-
-### packet_generator.py
-
-Converts IDE-generated firmware binaries into bootloader packets.
-
-Generated packet format:
-
-```text
-Header
-Length
-Payload
-CRC16
-```
-
----
-
-## Known Limitation
-
-Current implementation relies on sender-side transmission delay.
-
-Large firmware transfers require sufficient inter-character delay because Flash programming and verification occur between chunk receptions.
-
-Example:
-
-```text
-30 Delay  -> Transfer Failure
-100 Delay -> Transfer Success
-```
+UART reception pauses while Flash is being programmed.
 
 ---
 
 ## Future Improvements
 
-Project 13
+### Project 14
 
-* Packet-based firmware transfer
-* Packet numbering
-* Packet validation
+* Ping-Pong (Double) Buffering
+* Continuous UART Reception
+* Non-blocking Flash Programming
 
-Project 13.5
+### Project 15
 
-* ACK/NACK protocol
-* Packet retransmission
-* Error recovery
-
-Project 14
-
-* Double buffering
-* Background Flash programming
-* Higher throughput firmware updates
+* DMA-Based Reception
+* ACK/NACK Flow Control
+* Advanced Packet Protocol
+* Sequence Numbers
+* Error Recovery
 
 ---
 
 ## Learning Outcomes
 
-Through this project the following concepts were implemented and tested:
+This project demonstrates:
 
-* Flash Memory Programming
-* Dynamic Page Erase
-* Firmware Streaming
-* Chunk-Based Processing
-* Memory-Mapped Flash Access
-* Flash Verification
-* CRC Verification
-* Firmware Metadata Management
-* Application Validation
-* Bootloader to Application Jump
+* UART Interrupt Handling
+* ISR Design
+* Critical Sections
+* Chunked Data Transfer
+* Flash Programming
+* Firmware Verification
+* Bootloader Architecture
+* Embedded System Design
 
 ---
 
-Author: Brajogopal Chakraborty
+## Test Environment
 
-Development Style:
+* MCU: STM32F030C8T6
+* UART: USART2
+* Baud Rate: 9600
+* Tool: RealTerm
+* Packet Generator: Python
 
-```text
-STM32 Register-Level Programming
-Bare-Metal Development
-No HAL
-No CubeMX
-```
+---
+
+## Repository
+
+Part of the STM32 Bare-Metal Drivers and HexBoot_F0 learning ecosystem.
+
+Author: Brajo
+Year: 2026
+
+> "I will climb all the mountain in my path to success."

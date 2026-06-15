@@ -21,14 +21,14 @@ The script is included as a development utility to simplify firmware testing and
 The generated packet follows the protocol implemented in Project 11 (HexBoot_F0_IAP).
 
 ```text
-+--------+----------+-------------+-------+
-| Header | Length   | Payload     | CRC16 |
-+--------+----------+-------------+-------+
++--------+----------+---------+-----------+
+| Header | Length   |  CRC16  |  Payload  |
++--------+----------+---------+-----------+
 
 Header  : 1 Byte
 Length  : 2 Bytes (Little Endian)
-Payload : Firmware Binary
 CRC16   : 2 Bytes (CRC16-CCITT)
+Payload : Firmware Binary
 ```
 
 ---
@@ -37,7 +37,7 @@ CRC16   : 2 Bytes (CRC16-CCITT)
 
 Compatible with:
 
-* 11_HexBoot_F0_IAP
+* 13_HexBoot_F0_Interrupt_IAP
 
 Expected Bootloader Flow:
 
@@ -46,13 +46,13 @@ Receive Header
 ↓
 Receive Payload Length
 ↓
-Receive Firmware Payload
-↓
 Receive CRC
 ↓
-CRC Verification
+Receive Firmware Payload
 ↓
 Flash Programming
+↓
+CRC Verification
 ↓
 Metadata Generation
 ↓
