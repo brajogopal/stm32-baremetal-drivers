@@ -1,0 +1,16 @@
+Lessons Learned
+
+1. Entire firmware does not need to be stored in RAM.
+
+2. Flash memory is memory mapped and can be accessed
+   directly using pointers.
+
+3. CRC can be calculated directly from Flash memory.
+
+4. Dynamic page erase is required when firmware size
+   exceeds a single page.
+
+5. Flash programming time affects UART reception timing.
+
+6. Chunk-based programming scales better than
+   full-buffer programming.
