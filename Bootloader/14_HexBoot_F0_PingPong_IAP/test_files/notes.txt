@@ -1,0 +1,47 @@
+# Project 13 Test Firmware Notes
+
+## Purpose:
+
+This firmware image was used to validate the UART Interrupt Firmware Receiver (Project 13).
+
+## Test Procedure:
+
+1. Build the test application.
+2. Generate packet using packet_generator.py.
+3. Open RealTerm.
+4. Configure UART:
+
+   * Baud Rate: 9600
+   * Data Bits: 8
+   * Stop Bits: 1
+   * Parity: None
+5. Send generated *_packet.bin file.
+6. Verify:
+
+   * Flash programming succeeds
+   * CRC verification passes
+   * Metadata is generated
+   * Bootloader jumps to application
+
+## Packet Format:
+
++--------+----------+--------+-------------+
+| Header | Length   | CRC16  | Payload     |
++--------+----------+--------+-------------+
+
+Header  : 0xAA
+Length  : 2 Bytes (Little Endian)
+CRC16   : CRC16-CCITT
+Payload : Firmware Binary
+
+## Known Limitation:
+
+This version uses a single receive buffer.
+UART interrupts are disabled during flash programming to prevent buffer corruption.
+
+## Future Improvements:
+
+* Ping-Pong Buffer (Project 14)
+* DMA Reception
+* ACK/NACK Protocol
+* Continuous Streaming IAP

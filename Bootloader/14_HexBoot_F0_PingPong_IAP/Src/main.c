@@ -43,52 +43,6 @@ int main() {
 		 Byte N      : Payload
 		 */
 
-		uart_status = uart_receive_with_timeout(&header, UART_TIMEOUT_LONG);
-		if (uart_status != UART_OK) {
-			println("UART Timeout");
-			jmp_to_app(APPLICATION_A_ADDRESS);
-			while (1);
-		} else {
-			println("Firmware Header Receive successful");
-		}
-
-
-
-		if (header != FW_HEADER) {
-			println("Invalid Header");
-			while (1);
-		} else {
-			println("Header Matched");
-		}
-
-
-
-		uart_status = reconstruct_halfword_timeout(&payload_length_bytes, UART_TIMEOUT_LONG);
-		if (uart_status != UART_OK) {
-			println("Firmware length Receive Failed");
-			while (1);
-		} else {
-			printf("Firmware length Receive successful : %u byte\r\n", payload_length_bytes);
-		}
-
-
-
-		if ((payload_length_bytes % 2 != 0) || (payload_length_bytes > (24576 - 32))) {
-			println("Invalid Payload Length");
-			while (1);
-		}
-
-
-		uart_status = reconstruct_halfword_timeout(&received_crc, UART_TIMEOUT_LONG);
-
-		if (uart_status != UART_OK) {
-			println("CRC Receive Failed");
-			while (1);
-		} else {
-			printf("Received CRC : 0x%04X\r\n", received_crc);
-		}
-
-
 
 
 	/***************************************************************/
