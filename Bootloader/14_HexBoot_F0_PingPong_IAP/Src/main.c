@@ -12,7 +12,7 @@
 
 
 #define CHUNK_SIZE 128
-#define FW_HEADER 0xAA
+
 #define UART_TIMEOUT_LONG 10000000UL
 
 
@@ -23,17 +23,11 @@ volatile uint16_t rx_index = 0;
 
 volatile uint32_t bytes_received = 0;
 volatile uint32_t total = 0;
-uint16_t payload_length_bytes = 0;
 
 int main() {
-	debug_uart_init(9600);
 	flash_status_t flash_status;
 	uart_status_t uart_status;
-	uint8_t header;
-	uint16_t received_crc;
-	uint16_t calculated_crc;
-
-
+	uart_interrupt_init(9600);
 	println("Ready to receive Firmware");
 		/*
 		 Packet Format
@@ -42,105 +36,21 @@ int main() {
 		 Byte 1-2    : CRC16
 		 Byte N      : Payload
 		 */
-
-
-
-	/***************************************************************/
-	/* From here the uart interrupt and payload receive code start */
-	/***************************************************************/
-
-	uart_interrupt_init(9600);
-
 	while (1) {
-
-		if(chunk_ready){
-
-			__disable_irq();
-
-			count++;
-			chunk_ready = 0;
-			uint16_t len = rx_index;
-			rx_index = 0;
-			total = bytes_received;
-
-
-
-			if(count == 1){
-				/*------- Erasing memory region-------*/
-				erase_flash_region(APPLICATION_A_ADDRESS, payload_length_bytes);
-			}
-
-
-			uint32_t flash_address = (APPLICATION_A_ADDRESS + (count - 1) * CHUNK_SIZE);
-
-			/* Program chunk */
-			flash_status = program_flash_chunk( flash_address,(uint16_t*)rx_buffer, ((len + 1)/2));
-			flash_handle_status(flash_status);
-
-
-			__enable_irq();
-		}
-
-
-
-
-		/**********************************************/
-		/*------- If Firmware Receive Complete -------*/
-		/**********************************************/
-		if(total >= payload_length_bytes){
-			USART2->CR1 &= ~UART_RXNEIE;
-
-
-			println("Firmware Receive successful");
-
-			calculated_crc = crc16_calculate((uint8_t*)APPLICATION_A_ADDRESS, payload_length_bytes);
-			printf("Calculated CRC : 0x%04X\r\n", calculated_crc);
-
-
-			if (calculated_crc == received_crc) {
-
-				println("CRC verified successfully");
-
-				/*----------    WRITING META DATA    ---------*/
-				if (flash_status == FLASH_OK) {
-
-					firmware_metadata_t metadata;
-
-					metadata.magic_number = APP_MAGIC;
-					metadata.firmware_length = payload_length_bytes;
-					metadata.firmware_crc = calculated_crc;
-
-					flash_status = metadata_write(METADATA_SLOT_A,&metadata);
-					flash_handle_status(flash_status);
-				}
-
-				jmp_to_app(APPLICATION_A_ADDRESS);
-			}
-			else {
-				println("CRC verification failed");
-				println("corrupted data");
-				println("restart the process");
-				while (1);
-			}
-			 bytes_received = 0;
+		if(firmware_rx_get_state() == FW_COMPLETE)
+		{
+		    verify_crc();
 		}
 	}
 }
 
 
-void USART2_IRQHandler(void){
-	if(USART2->ISR & UART_RXNE)
-	{
-		uint8_t data = USART2->RDR;
+void USART2_IRQHandler(void)
+{
+    if(USART2->ISR & UART_RXNE)
+    {
+        uint8_t data = USART2->RDR;
 
-		if(rx_index < CHUNK_SIZE)
-		{
-			rx_buffer[rx_index++] = data;
-			bytes_received++;
-			if(rx_index >= CHUNK_SIZE || bytes_received >= payload_length_bytes)
-			{
-				chunk_ready = 1;
-			}
-		}
-	}
+        firmware_rx_process_byte(data);
+    }
 }

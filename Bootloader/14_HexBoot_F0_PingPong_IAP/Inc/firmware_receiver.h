@@ -11,7 +11,10 @@
 #include <stdint.h>
 #include "uart.h"
 #include "flash_driver.h"
+#include <stdbool.h>
 
+
+#define FW_HEADER 0xAA
 
 typedef enum
 {
@@ -24,12 +27,17 @@ typedef enum
 } fw_rx_state_t;
 
 
-flash_status_t erase_flash_region(uint32_t start_address, uint32_t size_bytes);
-flash_status_t program_flash_chunk(uint32_t flash_address, uint16_t *chunk_buffer, uint32_t halfword_count);
+
 
 void firmware_rx_init(void);
 void firmware_rx_process_byte(uint8_t data);
 
 fw_rx_state_t firmware_rx_get_state(void);
+
+bool firmware_chunk_ready(void);
+
+uint8_t *firmware_get_flash_buffer(void);
+
+uint16_t firmware_get_chunk_length(void);
 
 #endif /* FIRMWARE_RECEIVER_H_ */

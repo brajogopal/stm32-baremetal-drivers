@@ -7,73 +7,85 @@
 
 #include "uart.h"
 #include "firmware_receiver.h"
-#include "flash_driver.h"
 #include <stdio.h>
 
-#define FLASH_PAGE_SIZE		0x400U	// 1KB
 
-/*------------ For Erase Flash -------------*/
-flash_status_t erase_flash_region(uint32_t start_address, uint32_t size_bytes) {
-	flash_status_t status;
-	status = flash_unlock();
-	if (status != FLASH_OK) {
-		flash_lock();
-		println("Flash unlocked failed");
-		return status;
-	}
 
-	/*-------------- Dynamic Flash Erased -------------*/
-	uint32_t number_of_pages_to_erase;
+static volatile fw_rx_state_t rx_state = WAIT_HEADER;
 
-	number_of_pages_to_erase = ((size_bytes + FLASH_PAGE_SIZE - 1) / FLASH_PAGE_SIZE);
+static uint8_t parser_index = 0;
 
-	for (uint32_t page_index = 0; page_index < number_of_pages_to_erase; page_index++) {
-		status = flash_erase_page(start_address + (page_index * FLASH_PAGE_SIZE));
+static uint8_t length_bytes[2];
+static uint8_t crc_bytes[2];
 
-		if (status != FLASH_OK) {
-			flash_lock();
-			return status;
-		}
-	}
+static uint16_t payload_length = 0;
+static uint16_t expected_crc = 0;
 
-	flash_lock();
-	return FLASH_OK;
+
+
+
+void firmware_rx_process_byte(uint8_t data)
+{
+    switch(rx_state)
+    {
+        case WAIT_HEADER:
+        	if (data == FW_HEADER){
+        		println("Header matched");
+        	    parser_index = 0;
+        		rx_state = READ_LENGTH;
+        	}
+            break;
+
+        case READ_LENGTH:
+        	length_bytes[parser_index++] = data;
+        	if(parser_index == 2){
+        		payload_length = (length_bytes[0] | ((uint16_t)length_bytes[1] << 8U));
+        		parser_index = 0;
+        		printf("Length: %u\r\n", payload_length);
+        		rx_state = READ_CRC;
+        	}
+            break;
+
+        case READ_CRC:
+        	crc_bytes[parser_index++] = data;
+        	if(parser_index == 2){
+        		expected_crc = (crc_bytes[0] | ((uint16_t)crc_bytes[1] << 8U));
+        		parser_index = 0;
+        		printf("CRC: 0x%04X\r\n", expected_crc);
+        	    rx_state = RECEIVE_PAYLOAD;
+        	}
+            break;
+
+        case RECEIVE_PAYLOAD:
+        	rx_buffer[parser_index++] = data;
+        	bytes_received++;
+
+        	if(parser_index >= CHUNK_SIZE || bytes_received >= payload_length)
+        	{
+        	    chunk_ready = 1;
+        	    rx_state = FW_COMPLETE;
+        	}
+
+        case FW_COMPLETE:
+
+
+            break;
+
+        case FW_ERROR:
+
+
+            break;
+    }
 }
 
-/*------------ For Storing Chunk Data in Flash -------------*/
-flash_status_t program_flash_chunk(uint32_t flash_address,
-		uint16_t *chunk_buffer, uint32_t halfword_count)
-	{
-	flash_status_t status;
-	status = flash_unlock();
-	if (status != FLASH_OK) {
-		flash_lock();
-		println("Flash unlocked failed");
-		return status;
-	}
 
-
-
-	status = flash_program_buffer(flash_address, chunk_buffer, halfword_count);
-	if (status != FLASH_OK)
-	{
-		flash_lock();
-		println("Flash Write Failed");
-		return status;
-	}
-
-
-
-	/***** Read the stored data from flash and compare *****/
-	for (uint32_t i = 0; i < halfword_count; i++)
-	{
-		uint16_t flash_value = *(__IO uint16_t*) (flash_address + (i * 2));
-
-		if (flash_value != chunk_buffer[i]) {
-			return FLASH_VERIFY_ERROR;
-		}
-	}
-
-	flash_lock();
-	return FLASH_OK;
+fw_rx_state_t firmware_rx_get_state(void)
+{
+    return rx_state;
 }
+
+
+
+
+
+
