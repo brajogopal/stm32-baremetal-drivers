@@ -1,0 +1,50 @@
+Test Notes
+
+Firmware File:
+
+* 11_Hexboot_F0_TEST.bin
+
+Packet File:
+
+* 14
+_Hexboot_F0_TEST_packet.bin
+
+Packet Format:
+
+* Header (1 byte)
+* Payload Length (2 bytes)
+* CRC16 (2 bytes)
+* Payload (N bytes)
+
+Test Configuration:
+
+* STM32F030C8T6
+* UART2
+* Baud Rate: 9600
+* Chunk Size: 128 bytes
+
+Expected Results:
+
+* Header detected successfully
+* Payload length reconstructed correctly
+* CRC reconstructed correctly
+* Firmware received in 128-byte chunks
+* Flash programmed successfully
+* Calculated CRC matches received CRC
+* Metadata updated successfully
+* Bootloader validates and jumps to application
+
+Known Limitations:
+
+* Single receive buffer architecture
+* UART interrupts disabled during flash programming
+* Sender requires inter-chunk delay
+* No ACK/NACK flow control
+* No ping-pong buffering
+
+Future Improvements:
+
+* Ping-Pong (Double Buffer) Reception
+* Continuous reception during flash programming
+* ACK/NACK protocol
+* DMA-based UART reception

@@ -18,11 +18,14 @@ static uint8_t parser_index = 0;
 static uint8_t length_bytes[2];
 static uint8_t crc_bytes[2];
 
-static uint16_t payload_length = 0;
-static uint16_t expected_crc = 0;
+uint16_t payload_length = 0;
+uint16_t expected_crc = 0;
 
-
-
+volatile uint8_t erase_whole = 0;
+volatile uint16_t len =0;
+volatile uint32_t bytes_received = 0;
+volatile uint8_t chunk_ready = 0;
+volatile uint8_t rx_buffer[CHUNK_SIZE];
 
 void firmware_rx_process_byte(uint8_t data)
 {
@@ -36,15 +39,19 @@ void firmware_rx_process_byte(uint8_t data)
         	}
             break;
 
+
         case READ_LENGTH:
         	length_bytes[parser_index++] = data;
         	if(parser_index == 2){
         		payload_length = (length_bytes[0] | ((uint16_t)length_bytes[1] << 8U));
         		parser_index = 0;
         		printf("Length: %u\r\n", payload_length);
+        		erase_whole = 1;
         		rx_state = READ_CRC;
         	}
-            break;
+
+        	break;
+
 
         case READ_CRC:
         	crc_bytes[parser_index++] = data;
@@ -56,23 +63,39 @@ void firmware_rx_process_byte(uint8_t data)
         	}
             break;
 
+
+    	/*
+    	 * Firmware payload is received in CHUNK_SIZE blocks.
+   		 * When a chunk is full, chunk_ready is asserted and
+   		 * main() programs the data into flash memory.
+   		 */
         case RECEIVE_PAYLOAD:
         	rx_buffer[parser_index++] = data;
         	bytes_received++;
 
-        	if(parser_index >= CHUNK_SIZE || bytes_received >= payload_length)
+        	if(parser_index >= CHUNK_SIZE)
         	{
+        		len = parser_index;
+        		parser_index = 0;
+        	    chunk_ready = 1;
+        	}
+
+        	if(bytes_received >= payload_length)
+        	{
+        		len = parser_index;
+        		parser_index = 0;
         	    chunk_ready = 1;
         	    rx_state = FW_COMPLETE;
         	}
 
+        	break;
         case FW_COMPLETE:
-
+        	/* Reserved for future use */
 
             break;
 
         case FW_ERROR:
-
+        	/* Reserved for future error handling */
 
             break;
     }
