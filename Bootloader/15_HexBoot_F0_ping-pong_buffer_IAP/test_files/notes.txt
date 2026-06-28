@@ -1,0 +1,91 @@
+Project : 15_HexBoot_F0_PingPong_Buffer_IAP
+
+Firmware Tested:
+- blink.bin
+- Firmware Size: 556 bytes
+
+Test Setup:
+- STM32F030C8T6
+- ST-Link V2
+- USB-UART Converter
+- RealTerm
+- UART Interrupt Reception
+- Ping-Pong Buffer Size: 128 Bytes
+
+Test Cases:
+
+[PASS] Firmware Transfer
+- Header received successfully
+- Length received successfully
+- CRC received successfully
+- Firmware programmed to flash
+- CRC verification passed
+
+Expected:
+Calculated CRC == Received CRC
+
+Result:
+PASS
+
+--------------------------------------------------
+
+[PASS] Ping-Pong Buffer Operation
+- Buffer A receives incoming data
+- Buffer B prepared for flash programming
+- Buffers swapped successfully
+- Firmware programmed in chunks
+
+Result:
+PASS
+
+--------------------------------------------------
+
+[PASS] Flash Programming
+- Multiple chunks written successfully
+- FLASH_OK received for all chunks
+
+Result:
+PASS
+
+--------------------------------------------------
+
+[PASS] CRC Verification
+Received CRC   : 0xE4D0
+Calculated CRC : 0xE4D0
+
+Result:
+PASS
+
+--------------------------------------------------
+
+[DEBUG] UART Throughput Investigation
+
+9600 Baud
+Minimum Stable Delay : 20 ms
+
+19200 Baud
+Minimum Stable Delay : 15 ms
+
+38400 Baud
+Transfer becomes unstable at low delays
+
+--------------------------------------------------
+
+[DEBUG] UART Overrun Investigation
+
+Observation:
+USART Overrun Error (ORE) detected during high speed transfer.
+
+Effect:
+- Payload bytes lost
+- Transfer remains in RECEIVE_PAYLOAD state
+- Firmware update cannot complete
+
+Root Cause:
+Interrupt-per-byte UART reception becomes the bottleneck at higher transfer rates.
+
+Next Improvement:
+UART DMA Based Firmware Reception
+
+Result:
+EXPECTED BEHAVIOR

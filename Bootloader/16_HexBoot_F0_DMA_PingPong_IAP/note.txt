@@ -1,0 +1,99 @@
+Project 15 Notes
+===============
+
+Objective
+---------
+Implement Ping-Pong Buffering for UART based Firmware Update.
+
+Background
+----------
+Project 14 successfully implemented Interrupt Based IAP using a single receive buffer.
+
+The limitation of Project 14 was that reception and flash programming shared the same buffer.
+
+Project 15 introduces a Ping-Pong Buffer architecture to separate:
+
+1. Receive Buffer
+2. Programming Buffer
+
+Architecture
+------------
+UART Interrupt
+      |
+      v
+Firmware Packet Parser
+      |
+      v
+Ping-Pong Buffer
+      |
+      +--> Receive Buffer
+      |
+      +--> Programming Buffer
+      |
+      v
+Flash Programming
+      |
+      v
+CRC Verification
+
+Implementation
+--------------
+- Created firmware_pingpong.c
+- Created firmware_pingpong.h
+- Added Ping-Pong buffer structure
+- Added buffer swapping mechanism
+- Integrated Ping-Pong reception with firmware parser
+- Integrated Ping-Pong buffers with flash programming
+
+Key Functions
+-------------
+firmware_pingpong_init()
+firmware_pingpong_process_byte()
+swap_buffers()
+
+Results
+-------
+Firmware transfer completed successfully.
+
+Received CRC   : 0xE4D0
+Calculated CRC : 0xE4D0
+
+CRC verification successful.
+
+Performance Investigation
+-------------------------
+9600 Baud  -> Stable with 20 ms delay
+19200 Baud -> Stable with 15 ms delay
+38400 Baud -> Overrun observed at low delays
+
+Debug Investigation
+-------------------
+Flash programming was temporarily removed.
+
+Result:
+ORE still occurred.
+
+Conclusion:
+Flash programming is not the primary bottleneck.
+
+UART Overrun Error (ORE) was detected during high speed transfers.
+
+This indicates that interrupt-per-byte UART reception becomes the limiting factor.
+
+Limitations
+-----------
+- UART reception still uses RX interrupt per byte.
+- ORE occurs at higher transfer rates.
+- Firmware receiver remains in RECEIVE_PAYLOAD state when bytes are lost.
+- No automatic recovery from ORE.
+
+Future Work
+-----------
+Project 16:
+DMA Based Firmware Reception
+
+Expected Benefits:
+- Reduced CPU interrupt load
+- Improved transfer throughput
+- Reduced probability of UART overrun
+- Better scalability for larger firmware images
