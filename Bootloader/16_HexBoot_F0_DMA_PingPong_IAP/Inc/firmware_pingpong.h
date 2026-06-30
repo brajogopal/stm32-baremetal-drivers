@@ -1,6 +1,17 @@
 /*
  * firmware_pingpong.h
  *
+ * Public interface for Ping-Pong buffer management.
+ *
+ * Responsibilities:
+ * - Buffer initialization.
+ * - Buffer swapping.
+ * - Buffer ownership management.
+ *
+ * Ping-Pong buffering allows firmware reception and Flash programming
+ * to execute independently.
+ *
+ * ==================================================================
  *  Created on: 18-Jun-2026
  *      Author: brajo
  */

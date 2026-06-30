@@ -1,6 +1,14 @@
 /*
  * metadata.h
  *
+ * Public interface for firmware metadata management.
+ *
+ * Responsibilities:
+ * - Store firmware information.
+ * - Validate application metadata.
+ * - Provide firmware information to the bootloader.
+ *
+ * =================================================
  *  Created on: 26-May-2026
  *      Author: brajo
  */

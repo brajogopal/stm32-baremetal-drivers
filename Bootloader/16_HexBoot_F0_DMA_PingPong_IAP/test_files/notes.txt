@@ -1,91 +1,23 @@
-Project : 15_HexBoot_F0_PingPong_Buffer_IAP
+# Test Files
 
-Firmware Tested:
-- blink.bin
-- Firmware Size: 556 bytes
+This folder contains firmware images used during the development and validation of the DMA Ping-Pong In-Application Programming (IAP) bootloader.
 
-Test Setup:
-- STM32F030C8T6
-- ST-Link V2
-- USB-UART Converter
-- RealTerm
-- UART Interrupt Reception
-- Ping-Pong Buffer Size: 128 Bytes
+These files are intended for testing only and are not part of the bootloader source code.
 
-Test Cases:
+## Purpose
 
-[PASS] Firmware Transfer
-- Header received successfully
-- Length received successfully
-- CRC received successfully
-- Firmware programmed to flash
-- CRC verification passed
+* Validate DMA-based firmware reception.
+* Test flash programming.
+* Verify CRC calculation.
+* Test different firmware sizes.
+* Perform regression testing after code changes.
 
-Expected:
-Calculated CRC == Received CRC
+## Typical Test Cases
 
-Result:
-PASS
+* Small firmware image
+* Multiple DMA chunk transfers
+* CRC verification
+* Flash programming verification
+* Bootloader jump to application
 
---------------------------------------------------
-
-[PASS] Ping-Pong Buffer Operation
-- Buffer A receives incoming data
-- Buffer B prepared for flash programming
-- Buffers swapped successfully
-- Firmware programmed in chunks
-
-Result:
-PASS
-
---------------------------------------------------
-
-[PASS] Flash Programming
-- Multiple chunks written successfully
-- FLASH_OK received for all chunks
-
-Result:
-PASS
-
---------------------------------------------------
-
-[PASS] CRC Verification
-Received CRC   : 0xE4D0
-Calculated CRC : 0xE4D0
-
-Result:
-PASS
-
---------------------------------------------------
-
-[DEBUG] UART Throughput Investigation
-
-9600 Baud
-Minimum Stable Delay : 20 ms
-
-19200 Baud
-Minimum Stable Delay : 15 ms
-
-38400 Baud
-Transfer becomes unstable at low delays
-
---------------------------------------------------
-
-[DEBUG] UART Overrun Investigation
-
-Observation:
-USART Overrun Error (ORE) detected during high speed transfer.
-
-Effect:
-- Payload bytes lost
-- Transfer remains in RECEIVE_PAYLOAD state
-- Firmware update cannot complete
-
-Root Cause:
-Interrupt-per-byte UART reception becomes the bottleneck at higher transfer rates.
-
-Next Improvement:
-UART DMA Based Firmware Reception
-
-Result:
-EXPECTED BEHAVIOR
+Additional firmware images can be added to this directory for future robustness and stress testing.

@@ -1,6 +1,17 @@
 /*
  * firmware_receiver.h
  *
+ * Public interface for the firmware reception state machine.
+ *
+ * Responsibilities:
+ * - Firmware reception.
+ * - Firmware state definitions.
+ * - Header parsing.
+ * - Firmware progress tracking.
+ *
+ * This module coordinates DMA reception and firmware processing.
+ *
+ * ==============================================================
  *  Created on: 28-May-2026
  *      Author: brajo
  */
@@ -11,15 +22,8 @@
 #include <stdint.h>
 #include "uart.h"
 #include "flash_driver.h"
-#include <stdbool.h>
-
-
 
 #define CHUNK_SIZE 128
-
-
-
-
 
 typedef struct
 {
@@ -28,9 +32,29 @@ typedef struct
     uint16_t crc;
 } FW_Header_t;
 
-/*
+
+
+/******************************************************
  * Firmware Reception State Machine
- */
+ *
+ * RECEIVE_HEADER
+ *     Configure DMA to receive the packet header.
+ *
+ * PARSE_HEADER
+ *     Validate the received header and extract metadata.
+ *
+ * START_PAYLOAD_DMA
+ *     Configure DMA to receive the first firmware chunk.
+ *
+ * RECEIVE_PAYLOAD
+ *     Process a completed firmware chunk.
+ *
+ * FW_COMPLETE
+ *     Firmware reception completed successfully.
+ *
+ * FW_ERROR
+ *     Reserved for future error handling.
+ ****************************************************/
 typedef enum
 {
     RECEIVE_HEADER,
@@ -43,31 +67,15 @@ typedef enum
 
 
 
-/*
- * Parser context
- * Maintains firmware reception state between UART interrupts.
- */
-extern volatile uint8_t erase_whole;
 extern uint16_t payload_length;
 extern volatile uint32_t header_received;
 extern volatile uint32_t bytes_received;
 extern uint16_t expected_crc;
-extern volatile uint8_t chunk_ready;
-extern volatile uint8_t rx_buffer[CHUNK_SIZE];
-extern volatile uint8_t last_chunk;
-extern volatile uint8_t flash_chunk_size;
+extern volatile uint8_t program_chunk_size;
 
 
-void firmware_rx_init(void);
-void firmware_rx_process_byte(uint8_t data);
 
 fw_rx_state_t firmware_rx_get_state(void);
-
-bool firmware_chunk_ready(void);
-
-uint8_t *firmware_get_flash_buffer(void);
-
-uint16_t firmware_get_chunk_length(void);
 
 void firmware_rx_process(void);
 

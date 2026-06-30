@@ -1,6 +1,19 @@
 /*
  * dma.h
  *
+ * This module provides the public interface for the DMA driver.
+ *
+ * Responsibilities:
+ * - DMA initialization.
+ * - DMA transfer configuration.
+ * - DMA receive API.
+ *
+ * This module does NOT:
+ * - Parse firmware packets.
+ * - Program Flash.
+ * - Perform CRC verification.
+ *
+ * =============================================================
  *  Created on: 24-Jun-2026
  *      Author: brajo
  */
@@ -18,6 +31,22 @@
 
 
 void dma_init(void);
+
+
+/*
+ * Configure and start a DMA reception.
+ *
+ * Parameters:
+ *  buffer - Destination memory buffer.
+ *  size   - Number of bytes to receive.
+ *
+ * Returns:
+ *  None
+ *
+ * Notes:
+ *  Called by the firmware reception state machine whenever
+ *  a new DMA transfer is required.
+ */
 void dma_receive(void *buffer, uint16_t size);
 
 #endif /* DMA_H_ */

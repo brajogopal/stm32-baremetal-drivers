@@ -1,14 +1,33 @@
 /*
  * dma.c
  *
- *  Created on: 24-Jun-2026
- *      Author: brajo
+ * Project : HexBoot_F0_DMA_PingPong_IAP
+ *
+ * Description:
+ * Implements the DMA driver used by the bootloader to receive firmware
+ * over UART. The DMA peripheral transfers incoming UART data directly
+ * into memory, reducing CPU overhead during firmware updates.
+ *
+ * Responsibilities:
+ * - Initialize DMA Channel 5 for UART reception.
+ * - Configure DMA transfer destination and transfer size.
+ * - Start a new DMA reception.
+ *
+ * Notes:
+ * - The DMA driver is transport-only.
+ * - It does not understand firmware packets or bootloader logic.
+ * - Buffer ownership is managed by firmware_receiver.c.
  */
 
 #include "dma.h"
 #include "firmware_receiver.h"
 
 
+
+
+/******************************************************************************
+ * Public Functions
+ ******************************************************************************/
 void dma_init(void){
 
 RCC->AHBENR |= RCC_DMA_EN;
@@ -30,7 +49,12 @@ NVIC_SetPriority(DMA1_Channel4_5_IRQn,0); /* (2) */
 
 
 
-
+/********************************************************************
+ *  Configure DMA reception
+ *
+ * This function is called by the firmware reception state machine
+ * whenever a new firmware transfer is required.
+********************************************************************/
 void dma_receive(void *buffer, uint16_t size){
 	__disable_irq();
 

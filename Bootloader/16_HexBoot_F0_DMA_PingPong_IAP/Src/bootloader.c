@@ -1,6 +1,17 @@
 /*
  * bootloader.c
  *
+ * Project : HexBoot_F0_DMA_PingPong_IAP
+ *
+ * Description:
+ * Implements the bootloader startup sequence.
+ *
+ * Responsibilities:
+ * - Validate application metadata.
+ * - Verify firmware integrity.
+ * - Configure application stack pointer.
+ * - Jump to the user application.
+ *
  *  Created on: 26-Apr-2026
  *      Author: brajo
  */

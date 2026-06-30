@@ -1,6 +1,15 @@
 /*
  * bootloader.h
  *
+ * Public interface for the bootloader.
+ *
+ * Responsibilities:
+ * - Validate application.
+ * - Configure application stack.
+ * - Jump to user application.
+ * - Bootloader startup sequence.
+ *
+ * ==================================
  *  Created on: 26-Apr-2026
  *      Author: brajo
  */

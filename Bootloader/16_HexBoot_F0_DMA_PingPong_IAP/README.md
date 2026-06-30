@@ -1,189 +1,285 @@
-# 15_HexBoot_F0_PingPong_Buffer_IAP
+# Project 16 – STM32F0 DMA Ping-Pong IAP Bootloader
 
-## Overview
+## Bare-Metal UART Bootloader
 
-This project extends the interrupt-based firmware update system developed in Project 14 by introducing a Ping-Pong Buffer architecture.
+This project implements a **Bare-Metal UART Bootloader** for the **STM32F030C8T6** using **DMA-based firmware reception** and **Ping-Pong Buffering** for efficient and reliable firmware updates.
 
-The objective is to decouple firmware reception from flash programming by maintaining separate receive and programming buffers.
+Unlike the previous interrupt-driven implementation, this project offloads UART reception to the DMA controller, significantly reducing CPU involvement during firmware transfer while allowing flash programming and data reception to operate independently.
 
-Firmware data is received through UART interrupts, stored in the active receive buffer, and programmed to flash using the inactive programming buffer after a buffer swap.
-
----
-
-## Features
-
-- UART Interrupt Based Firmware Reception
-- Packet Based Firmware Protocol
-- Firmware Header Validation
-- Firmware Length Validation
-- CRC Validation
-- Ping-Pong Buffer Architecture
-- Chunk Based Flash Programming
-- Application Metadata Support
-- Firmware Integrity Verification
+This project represents the final feature implementation of the STM32F0 Bootloader series before the robustness and production validation phase.
 
 ---
 
-## Ping-Pong Buffer Architecture
+# Features
 
-```text
-UART Interrupt
-      |
-      v
-Firmware Packet Parser
-      |
-      v
-Ping-Pong Buffer
-      |
-      +--> Receive Buffer
-      |
-      +--> Programming Buffer
-      |
-      v
-Flash Programming
-      |
-      v
-CRC Verification
+- Bare-Metal STM32F030 Bootloader
+- Register-Level Programming (No HAL / No CubeMX)
+- UART DMA Firmware Reception
+- Ping-Pong Buffering
+- Flash Programming
+- Flash Verification
+- CRC16 Firmware Validation
+- Metadata Management
+- Automatic Bootloader to Application Jump
+- Modular Driver Architecture
+
+---
+
+# Hardware Platform
+
+Unlike many STM32 projects that rely on development boards, this project was developed using a **standalone STM32F030C8T6 MCU soldered onto a breakout board**.
+
+All peripherals including UART, SWD programming, buttons, LEDs, and power circuitry were manually connected on a breadboard to gain a deeper understanding of MCU hardware and board-level development.
+
+![Development Environment](screenshots/01_development_environment.jpg)
+
+![Hardware Setup](screenshots/02_hardware_test_setup.jpg)
+
+---
+
+# Project Structure
+
+![Project Structure](screenshots/03_project_structure.png)
+
 ```
-
----
-
-## Project Structure
-
-```text
 Inc/
-├── firmware_receiver.h
-├── firmware_pingpong.h
+│
+├── bootloader.h
+├── dma.h
 ├── flash_driver.h
-├── crc.h
+├── firmware_pingpong.h
+├── firmware_receiver.h
 ├── metadata.h
+├── uart.h
+└── ...
 
 Src/
-├── firmware_receiver.c
-├── firmware_pingpong.c
+│
+├── bootloader.c
+├── dma.c
 ├── flash_driver.c
-├── crc.c
+├── firmware_pingpong.c
+├── firmware_receiver.c
 ├── metadata.c
-├── main.c
+├── uart.c
+└── main.c
 ```
 
 ---
 
-## Key Functions
+# Firmware Packet Structure
 
-### firmware_pingpong_init()
+Firmware is transmitted using a custom packet format.
 
-Initializes Ping-Pong buffers and internal state.
+![Packet Structure](screenshots/04_packet_format.png)
 
-### firmware_pingpong_process_byte()
-
-Stores incoming UART data into the active receive buffer.
-
-### swap_buffers()
-
-Swaps receive and programming buffers when a chunk becomes ready.
+| Field | Size | Description |
+|-------|------|-------------|
+| Header | 2 Bytes | Start of firmware packet |
+| Payload Length | 2 Bytes | Firmware size |
+| CRC16 | 2 Bytes | Firmware CRC |
+| Payload | Variable | Application Binary |
 
 ---
 
-## Test Result
+# Flash Memory Layout
 
-Firmware Size:
+The internal Flash is divided into dedicated regions for the Bootloader, Metadata and Application.
 
-```text
-556 Bytes
+![Flash Memory Layout](screenshots/05_memory_layout.jpeg)
+
+| Region | Purpose |
+|---------|---------|
+| Bootloader | UART DMA Bootloader |
+| Metadata | Firmware Information |
+| Application | User Firmware |
+
+---
+
+# DMA Ping-Pong Architecture
+
+DMA continuously receives firmware while the CPU programs the previously received buffer into Flash.
+
+![DMA Architecture](screenshots/06_dma_architecture.png)
+
+```
+UART RX
+    │
+    ▼
+DMA Channel 5
+    │
+    ▼
+Buffer A ⇄ Buffer B
+    │
+    ▼
+Flash Programming
+    │
+    ▼
+CRC Verification
+    │
+    ▼
+Jump to Application
 ```
 
-Result:
+---
 
-```text
-Header matched
-Length: 556
-CRC: 0xE4D0
+# Firmware Update Flow
 
-FLASH_OK
-FLASH_OK
-FLASH_OK
-FLASH_OK
-FLASH_OK
+```mermaid
+flowchart TD
 
-Calculated CRC : 0xE4D0
-CRC verified successfully
+PC --> UART
+
+UART --> DMA
+
+DMA --> BufferA
+
+DMA --> BufferB
+
+BufferA --> Flash
+
+BufferB --> Flash
+
+Flash --> CRC
+
+CRC --> Metadata
+
+Metadata --> Bootloader
+
+Bootloader --> Application
 ```
 
 ---
 
-## Performance Investigation
+# DMA Firmware Reception
 
-| Baud Rate | Minimum Stable Delay |
-|------------|---------------------|
-| 9600 | 20 ms |
-| 19200 | 15 ms |
-| 38400 | Unstable at low delays |
+The firmware is received in multiple DMA transfers.
 
----
+Each completed DMA transfer:
 
-## Debug Investigation
+- Swaps the Ping-Pong buffers
+- Programs the previous buffer into Flash
+- Starts the next DMA reception automatically
 
-During throughput testing, USART Overrun Error (ORE) was observed at higher transfer rates.
-
-Observed behavior:
-
-```text
-ORE : 1
-```
-
-Investigation performed:
-
-- Flash programming temporarily removed
-- Debug prints removed
-- ORE still occurred
-
-Conclusion:
-
-The primary bottleneck is interrupt-per-byte UART reception.
+![DMA Firmware Reception](screenshots/07_dma_firmware_reception.png)
 
 ---
 
-## Limitations
+# Successful Firmware Update
 
-- UART reception uses one interrupt per received byte.
-- ORE may occur at higher transfer rates.
-- No automatic transfer recovery after ORE.
-- Firmware update remains incomplete when payload bytes are lost.
+After all firmware chunks are received:
+
+- Flash Programming completes
+- CRC is verified
+- Metadata is updated
+- Bootloader validates the application
+- Control is transferred to the application
+
+![Successful Firmware Update](screenshots/08_successful_firmware_update.png)
 
 ---
 
-## Future Improvements
+# Flash Verification
 
-Project 16 will introduce:
+The programmed firmware can be verified directly using STM32CubeProgrammer.
 
+![Flash Verification](screenshots/09_flash_memory_verification.png)
+
+---
+
+# Testing
+
+| Test | Status |
+|-------|--------|
+| DMA Reception | ✅ PASS |
+| Ping-Pong Buffer | ✅ PASS |
+| Flash Programming | ✅ PASS |
+| Flash Verification | ✅ PASS |
+| CRC Verification | ✅ PASS |
+| Metadata Update | ✅ PASS |
+| Bootloader Jump | ✅ PASS |
+
+---
+
+# Key Learning Outcomes
+
+- DMA Configuration
 - UART DMA Reception
-- Reduced interrupt overhead
-- Improved transfer throughput
-- Better scalability for larger firmware images
+- Ping-Pong Buffer Design
+- Flash Memory Programming
+- Flash Verification
+- CRC16 Implementation
+- Metadata Management
+- Bootloader Architecture
+- Register-Level Programming
+- Embedded State Machine Design
 
 ---
 
-## Screenshots
+# Current Limitations
 
-### Successful Firmware Transfer
-
-`01_PingPong_IAP_Successful_Firmware_Transfer.png`
-
-### UART Overrun Investigation
-
-`02_UART_Overrun_Error_Investigation.png`
+- UART is the only firmware transport interface.
+- Firmware authentication is not implemented.
+- Firmware encryption is not implemented.
+- Single application slot.
+- No rollback mechanism.
 
 ---
 
-## Target MCU
+# Future Improvements
 
-STM32F030C8T6
-
-ARM Cortex-M0
+- Secure Boot
+- Firmware Authentication
+- Firmware Encryption
+- BLE Firmware Update
+- Wi-Fi Firmware Update
+- CAN Bootloader
+- USB DFU Support
+- Dual Image Bootloader
+- Rollback Recovery
 
 ---
 
-## Author
+# Bootloader Evolution
 
-Brajo Gopal Chakraborty
+```
+Project 12
+Streaming IAP
+        │
+        ▼
+Project 13
+UART Interrupt IAP
+        │
+        ▼
+Project 14
+State Machine IAP
+        │
+        ▼
+Project 15
+Ping-Pong Buffer IAP
+        │
+        ▼
+Project 16
+DMA Ping-Pong IAP
+```
+
+Each project introduced one major architectural improvement while maintaining a fully Bare-Metal implementation.
+
+---
+
+# Project Information
+
+| Item | Details |
+|------|---------|
+| MCU | STM32F030C8T6 |
+| Core | ARM Cortex-M0 |
+| Language | C |
+| Programming Style | Bare Metal |
+| IDE | STM32CubeIDE |
+| Programmer | ST-Link V2 |
+| Communication | UART + DMA |
+| License | MIT |
+
+---
+
+This project is part of my **STM32 Bare-Metal Learning Journey**, focused on understanding STM32 peripherals, bootloader design, and embedded systems development using register-level programming without relying on vendor libraries.

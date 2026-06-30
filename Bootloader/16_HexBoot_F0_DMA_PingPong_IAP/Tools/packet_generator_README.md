@@ -21,11 +21,12 @@ The script is included as a development utility to simplify firmware testing and
 The generated packet follows the protocol implemented in Project 11 (HexBoot_F0_IAP).
 
 ```text
-+--------+----------+---------+-----------+
-| Header | Length   |  CRC16  |  Payload  |
-+--------+----------+---------+-----------+
++--------+----------+----------+---------+-----------+
+| Header | Padding  | Length   |  CRC16  |  Payload  |
++--------+----------+----------+---------+-----------+
 
 Header  : 1 Byte
+Padding	: 1 Byte
 Length  : 2 Bytes (Little Endian)
 CRC16   : 2 Bytes (CRC16-CCITT)
 Payload : Firmware Binary
@@ -37,7 +38,7 @@ Payload : Firmware Binary
 
 Compatible with:
 
-* 13_HexBoot_F0_Interrupt_IAP
+* 16_HexBoot_F0_Interrupt_IAP
 
 Expected Bootloader Flow:
 
@@ -104,7 +105,7 @@ Input File     : 11_Hexboot_F0_TEST.bin
 Output File    : 11_Hexboot_F0_TEST_packet.bin
 Payload Length : 556 bytes
 CRC16          : 0xE4D0
-Packet Size    : 561 bytes
+Packet Size    : 562 bytes
 ```
 
 ---

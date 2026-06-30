@@ -1,6 +1,22 @@
 /*
  * flash_driver.c
  *
+ * Project : HexBoot_F0_DMA_PingPong_IAP
+ *
+ * Description:
+ * Implements internal Flash memory operations required by the
+ * bootloader.
+ *
+ * Responsibilities:
+ * - Unlock Flash memory.
+ * - Erase Flash pages.
+ * - Program Flash half-words.
+ * - Verify programmed data.
+ * - Lock Flash after programming.
+ *
+ * Notes:
+ * All Flash accesses are performed using register-level programming.
+ *
  *  Created on: 12-May-2026
  *      Author: brajo
  */
@@ -26,9 +42,18 @@
 
 
 
+/******************************************************************************
+ * Private Function Prototypes
+ ******************************************************************************/
+
+
+
+
+
 static void flash_clear_flags(void){
 	FLASH->SR |= FLASH_ALL_ERRORS;
 }
+
 
 
 static flash_status_t flash_wait_busy(void){
@@ -42,32 +67,6 @@ static flash_status_t flash_wait_busy(void){
 		return FLASH_TIMEOUT;
 	}
 	}
-	return FLASH_OK;
-}
-
-
-
-flash_status_t flash_unlock(void){
-	/* (1) Wait till no operation is on going */
-	if(flash_wait_busy() != FLASH_OK){
-		return FLASH_TIMEOUT;
-	}
-
-	/* (2) Check that the flash memory is unlocked */
-	if ((FLASH->CR & FLASH_LOCK) != 0)
-	{
-
-	/* (3) Perform unlock sequence */
-	FLASH->KEYR = FLASH_FKEY1;
-	FLASH->KEYR = FLASH_FKEY2;
-	}
-	return FLASH_OK;
-}
-
-
-
-flash_status_t flash_lock(void){
-	FLASH->CR |= FLASH_LOCK;
 	return FLASH_OK;
 }
 
@@ -116,81 +115,6 @@ flash_status_t flash_erase_page(uint32_t addr){
 
 
 
-
-
-/*------------ For Erase Flash -------------*/
-flash_status_t erase_flash_region(uint32_t start_address, uint32_t size_bytes) {
-	flash_status_t status;
-	status = flash_unlock();
-	if (status != FLASH_OK) {
-		flash_lock();
-		println("Flash unlocked failed");
-		return status;
-	}
-
-	/*-------------- Dynamic Flash Erased -------------*/
-	uint32_t number_of_pages_to_erase;
-
-	number_of_pages_to_erase = ((size_bytes + FLASH_PAGE_SIZE - 1) / FLASH_PAGE_SIZE);
-
-	for (uint32_t page_index = 0; page_index < number_of_pages_to_erase; page_index++) {
-		status = flash_erase_page(start_address + (page_index * FLASH_PAGE_SIZE));
-
-		if (status != FLASH_OK) {
-			flash_lock();
-			return status;
-		}
-	}
-
-	flash_lock();
-	return FLASH_OK;
-}
-
-
-
-
-
-/*------------ For Storing Chunk Data in Flash -------------*/
-flash_status_t program_flash_chunk(uint32_t flash_address,
-		uint16_t *chunk_buffer, uint32_t halfword_count)
-	{
-	flash_status_t status;
-	status = flash_unlock();
-	if (status != FLASH_OK) {
-		flash_lock();
-		println("Flash unlocked failed");
-		return status;
-	}
-
-	status = flash_program_buffer(flash_address, chunk_buffer, halfword_count);
-	if (status != FLASH_OK)
-	{
-		flash_lock();
-		println("Flash Write Failed");
-		return status;
-	}
-
-
-	/***** Read the stored data from flash and compare *****/
-	for (uint32_t i = 0; i < halfword_count; i++)
-	{
-		uint16_t flash_value = *(__IO uint16_t*) (flash_address + (i * 2));
-
-		if (flash_value != chunk_buffer[i]) {
-			return FLASH_VERIFY_ERROR;
-		}
-	}
-
-
-	flash_lock();
-	return FLASH_OK;
-}
-
-
-
-
-
-
 flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
 
 	if((addr % 2) || (*(__IO uint16_t*)addr != 0xFFFF)) //Check 16bit DATA Alignment & Address Erased properly
@@ -236,6 +160,40 @@ flash_status_t flash_program_halfword(uint32_t addr,uint16_t data){
 
 
 
+
+
+
+
+
+/******************************************************************************
+ * Public Functions
+ ******************************************************************************/
+flash_status_t flash_unlock(void){
+	/* (1) Wait till no operation is on going */
+	if(flash_wait_busy() != FLASH_OK){
+		return FLASH_TIMEOUT;
+	}
+
+	/* (2) Check that the flash memory is unlocked */
+	if ((FLASH->CR & FLASH_LOCK) != 0)
+	{
+
+	/* (3) Perform unlock sequence */
+	FLASH->KEYR = FLASH_FKEY1;
+	FLASH->KEYR = FLASH_FKEY2;
+	}
+	return FLASH_OK;
+}
+
+
+
+flash_status_t flash_lock(void){
+	FLASH->CR |= FLASH_LOCK;
+	return FLASH_OK;
+}
+
+
+
 flash_status_t flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t length){
 
 	flash_clear_flags();
@@ -256,3 +214,75 @@ flash_status_t flash_program_buffer(uint32_t addr,uint16_t *data, uint32_t lengt
 	}
 	return FLASH_OK;
 }
+
+
+
+/*------------ For Erase Flash -------------*/
+flash_status_t erase_flash_region(uint32_t start_address, uint32_t size_bytes) {
+	flash_status_t status;
+	status = flash_unlock();
+	if (status != FLASH_OK) {
+		flash_lock();
+		println("Flash unlocked failed");
+		return status;
+	}
+
+	/*-------------- Dynamic Flash Erased -------------*/
+	uint32_t number_of_pages_to_erase;
+
+	number_of_pages_to_erase = ((size_bytes + FLASH_PAGE_SIZE - 1) / FLASH_PAGE_SIZE);
+
+	for (uint32_t page_index = 0; page_index < number_of_pages_to_erase; page_index++) {
+		status = flash_erase_page(start_address + (page_index * FLASH_PAGE_SIZE));
+
+		if (status != FLASH_OK) {
+			flash_lock();
+			return status;
+		}
+	}
+
+	flash_lock();
+	return FLASH_OK;
+}
+
+
+
+/*------------ For Storing Chunk Data in Flash -------------*/
+flash_status_t program_flash_chunk(uint32_t flash_address,
+		uint16_t *chunk_buffer, uint32_t halfword_count)
+	{
+	flash_status_t status;
+	status = flash_unlock();
+	if (status != FLASH_OK) {
+		flash_lock();
+		println("Flash unlocked failed");
+		return status;
+	}
+
+	status = flash_program_buffer(flash_address, chunk_buffer, halfword_count);
+	if (status != FLASH_OK)
+	{
+		flash_lock();
+		println("Flash Write Failed");
+		return status;
+	}
+
+
+	/***** Read the stored data from flash and compare *****/
+	for (uint32_t i = 0; i < halfword_count; i++)
+	{
+		uint16_t flash_value = *(__IO uint16_t*) (flash_address + (i * 2));
+
+		if (flash_value != chunk_buffer[i]) {
+			return FLASH_VERIFY_ERROR;
+		}
+	}
+
+
+	flash_lock();
+	return FLASH_OK;
+}
+
+
+
+
