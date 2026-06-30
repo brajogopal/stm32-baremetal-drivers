@@ -161,7 +161,7 @@ Each completed DMA transfer:
 - Programs the previous buffer into Flash
 - Starts the next DMA reception automatically
 
-![DMA Firmware Reception](screenshots/07_dma_firmware_reception.png)
+![DMA Firmware Reception](screenshots/07_dma_chunk_transfer.png)
 
 ---
 
