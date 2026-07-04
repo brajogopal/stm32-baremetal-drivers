@@ -1,0 +1,23 @@
+# Test Files
+
+This folder contains firmware images used during the development and validation of the DMA Ping-Pong In-Application Programming (IAP) bootloader.
+
+These files are intended for testing only and are not part of the bootloader source code.
+
+## Purpose
+
+* Validate DMA-based firmware reception.
+* Test flash programming.
+* Verify CRC calculation.
+* Test different firmware sizes.
+* Perform regression testing after code changes.
+
+## Typical Test Cases
+
+* Small firmware image
+* Multiple DMA chunk transfers
+* CRC verification
+* Flash programming verification
+* Bootloader jump to application
+
+Additional firmware images can be added to this directory for future robustness and stress testing.
