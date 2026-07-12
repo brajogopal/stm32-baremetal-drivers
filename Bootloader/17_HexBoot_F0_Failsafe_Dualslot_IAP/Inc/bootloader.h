@@ -29,6 +29,7 @@
 #define FLASH_START 0x08000000U
 #define FLASH_END   (FLASH_START + (64 * 1024))	//For STM32F030C8TX
 
+void bootloader_init(void);
 typedef void (*func_ptr)(void);
 int is_valid_app(uint32_t addr);
 void relocate_vector_table(uint32_t app_address);

@@ -19,13 +19,25 @@
 #include "bootloader.h"
 #include "stm32f030x8.h"
 #include "metadata.h"
+#include "firmware_pingpong.h"
+#include "dma.h"
 #include "uart.h"
 #include "delay.h"
 #include <stdio.h>
 
 #define SYSCFG_EN (1U<<0)
 
+void bootloader_init(void)
+{
+    debug_uart_init(19200);
 
+    dma_init();
+
+    firmware_pingpong_init(&fw_pingpong);
+
+    metadata_init(&metadata);
+
+}
 
 void flash_handle_status(flash_status_t status)
 {
@@ -36,12 +48,12 @@ void flash_handle_status(flash_status_t status)
 		break;
 
 	case FLASH_ERROR:
-		flash_lock();
+		//flash_lock();
 		println("FLASH_ERROR");
 		break;
 
 	case FLASH_TIMEOUT:
-		flash_lock();
+		//flash_lock();
 		println("FLASH_TIMEOUT");
 		break;
 
@@ -84,19 +96,6 @@ int is_valid_app(uint32_t addr) {
 	uint32_t msp = *(uint32_t*) addr;
 	uint32_t reset = *(uint32_t*) (addr + 4);
 
-
-	firmware_metadata_t metadata;
-	if(addr == APPLICATION_A_ADDRESS){
-	metadata_read(METADATA_SLOT_A,&metadata);
-	}
-	else if(addr == APPLICATION_B_ADDRESS){
-	metadata_read(METADATA_SLOT_B,&metadata);
-	}
-	else	{
-		println("Invalid Application Address");
-		 return 0;
-	}
-
 	// MSP must be in SRAM
 	if (msp < SRAM_START || msp > SRAM_END){
 		return 0;
@@ -114,10 +113,7 @@ int is_valid_app(uint32_t addr) {
 	if ((reset & 1) == 0){
 		return 0;
 	}
-	if(metadata.magic_number != APP_MAGIC){
-		println("Invalid APP_MAGIC");
-		return 0;
-	}
+
 	return 1;
 }
 

@@ -9,7 +9,7 @@
  * Initializes the bootloader modules and executes the
  * event-driven firmware update loop.
  */
-
+#include <stdio.h>
 
 /* MCU */
 #include "stm32f030x8.h"

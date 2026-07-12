@@ -35,7 +35,8 @@ static void metadata_default_values(void)
     metadata.slot_a.crc       = 0;
     metadata.slot_a.is_valid  = 0;
     metadata.slot_a.confirmed = 0;
-    metadata.slot_a.reserved  = 0;
+    metadata.slot_a.reserved[0]  = 0;
+    metadata.slot_a.reserved[1]  = 0;
 
     /* Slot B */
     metadata.slot_b.version   = 0;
@@ -43,7 +44,8 @@ static void metadata_default_values(void)
     metadata.slot_b.crc       = 0;
     metadata.slot_b.is_valid  = 0;
     metadata.slot_b.confirmed = 0;
-    metadata.slot_b.reserved  = 0;
+    metadata.slot_b.reserved[0]  = 0;
+    metadata.slot_b.reserved[1]  = 0;
 
     metadata.metadata_crc = 0;
 }
@@ -53,6 +55,19 @@ static void metadata_default_values(void)
 /********************************
          Public Function
  ********************************/
+
+/******************************************************************************
+ * Initialize Bootloader Metadata
+ *
+ * Workflow:
+ *  1. Load metadata from Flash.
+ *  2. Verify metadata integrity.
+ *  3. If invalid:
+ *      - Populate default metadata.
+ *      - Save metadata to Flash.
+ *
+ * This function only writes to Flash when metadata is missing or corrupted.
+ ******************************************************************************/
 void metadata_init(metadata_t *metadata){
 
 	metadata_load(metadata);

@@ -33,7 +33,8 @@
 
 typedef enum {
     SLOT_A = 0,
-    SLOT_B = 1
+    SLOT_B = 1,
+	SLOT_NONE
 } slot_t;
 
 typedef enum {
