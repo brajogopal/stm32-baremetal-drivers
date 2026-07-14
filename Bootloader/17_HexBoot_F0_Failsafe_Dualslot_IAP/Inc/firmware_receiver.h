@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include "uart.h"
 
+
 #define CHUNK_SIZE 128
 
 typedef struct
@@ -37,8 +38,6 @@ typedef struct
 /******************************************************
  * Firmware Reception State Machine
  *
- * RECEIVE_HEADER
- *     Configure DMA to receive the packet header.
  *
  * PARSE_HEADER
  *     Validate the received header and extract metadata.
@@ -57,7 +56,6 @@ typedef struct
  ****************************************************/
 typedef enum
 {
-    RECEIVE_HEADER,
     PARSE_HEADER,
 	START_PAYLOAD_DMA,
     RECEIVE_PAYLOAD,
@@ -74,6 +72,12 @@ extern uint16_t expected_crc;
 extern volatile uint8_t program_chunk_size;
 
 
+
+void firmware_receiver_init(void);
+
+void firmware_receiver_dma_callback(uint8_t value);
+
+uint8_t get_rx_update(void);
 
 fw_rx_state_t firmware_rx_get_state(void);
 

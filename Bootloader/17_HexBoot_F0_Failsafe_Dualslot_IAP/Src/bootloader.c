@@ -15,17 +15,42 @@
  *  Created on: 26-Apr-2026
  *      Author: brajo
  */
+
+/* MCU */
 #include <flash.h>
-#include "bootloader.h"
 #include "stm32f030x8.h"
-#include "metadata.h"
-#include "firmware_pingpong.h"
-#include "dma.h"
+
+/* Drivers */
 #include "uart.h"
+#include "crc.h"
+#include "dma.h"
+
+/* Bootloader */
+#include "bootloader.h"
+#include "metadata.h"
+#include "slot_manager.h"
+#include "firmware_receiver.h"
+#include "firmware_pingpong.h"
+
+/* BSP */
 #include "delay.h"
+#include "bsp.h"
+
 #include <stdio.h>
 
+
+
 #define SYSCFG_EN (1U<<0)
+
+
+static uint16_t firmware_verify_crc(void);
+void flash_handle_status(flash_status_t status);
+void receive_firmware(void);
+static uint16_t chunk_index = 0;
+static slot_t slot;
+
+
+
 
 void bootloader_init(void)
 {
@@ -37,7 +62,93 @@ void bootloader_init(void)
 
     metadata_init(&metadata);
 
+    firmware_receiver_init();
 }
+
+
+
+void bootloader_run(void){
+
+	if(get_rx_update())
+	{
+		firmware_receiver_dma_callback(0);
+		firmware_rx_process();
+		println("rx received");
+	}
+
+	receive_firmware();
+
+}
+
+void receive_firmware(void){
+	/* Flash */
+	flash_status_t flash_status;
+
+	/* CRC */
+	uint16_t calculated_crc;
+
+	/* State */
+	static uint8_t firmware_verified = 0;
+
+
+
+	if(header_received)
+	{
+		header_received = 0;
+		firmware_rx_process();  // Immediately arm DMA to receive firmware
+		slot = slot_manager_get_inactive_slot(&metadata);
+		flash_status = flash_erase(slot_manager_get_slot_address(slot), payload_length);
+		flash_handle_status(flash_status);
+	}
+
+
+	/* Flash Programming */
+	if(fw_pingpong.prog_ready)
+	{
+		println("prog_ready");
+	fw_pingpong.prog_ready = 0;
+	uint32_t flash_address = (slot_manager_get_slot_address(slot) + (chunk_index * CHUNK_SIZE));
+
+	/* Program chunk */
+	flash_status = flash_program( flash_address,(uint16_t*)fw_pingpong.prog_buffer , ((program_chunk_size + 1)/2));
+	flash_handle_status(flash_status);
+	chunk_index++;
+	}
+
+
+	/* Firmware Verification */
+	if(firmware_rx_get_state() == FW_COMPLETE && (!firmware_verified))
+	{
+		    calculated_crc = firmware_verify_crc();
+		    firmware_verified = 1;
+	}
+
+
+	/* Boot Application */
+	if(firmware_verified){
+		/*----------    WRITING META DATA    ---------*/
+		printf("CRC = %04X", calculated_crc);
+		while(1);
+	}
+
+}
+
+
+uint16_t firmware_verify_crc(void){
+	/*
+	 * Verify programmed firmware against the CRC
+	 * received in the packet header.
+	 */
+	uint16_t calculated_crc;
+	calculated_crc = crc16_calculate((uint8_t*)slot_manager_get_slot_address(slot), payload_length);
+	printf("Calculated CRC : 0x%04X\r\n", calculated_crc);
+
+	if (calculated_crc == expected_crc) {
+	println("CRC verified successfully");
+	}
+	return calculated_crc;
+}
+
 
 void flash_handle_status(flash_status_t status)
 {

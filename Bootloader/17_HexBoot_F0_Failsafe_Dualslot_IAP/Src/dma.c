@@ -67,3 +67,21 @@ void dma_receive(void *buffer, uint16_t size){
 
 	__enable_irq();
 }
+
+
+
+
+void DMA1_CH4_5_IRQHandler(void){
+    if(DMA1->ISR & DMA_ISR_TCIF5)	//Read
+    {
+        DMA1->IFCR |= DMA_IFCR_CGIF5;//Clear
+        firmware_receiver_dma_callback(1);
+    }
+
+    if(DMA1->ISR & DMA_ISR_TEIF5)	//Read
+    {
+        println("DMA ERROR");
+
+        DMA1->IFCR |= DMA_IFCR_CGIF5;//Clear
+    }
+}

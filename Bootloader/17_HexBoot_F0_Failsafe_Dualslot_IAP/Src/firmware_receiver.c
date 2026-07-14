@@ -39,7 +39,10 @@
 
 #define FW_HEADER 0xAA
 
-static volatile fw_rx_state_t rx_state = RECEIVE_HEADER;
+static volatile fw_rx_state_t rx_state = PARSE_HEADER;
+static volatile uint8_t rx_data_ready;
+volatile uint16_t chunk_index = 0;
+
 
 
 /******************************************************************************
@@ -63,27 +66,39 @@ static FW_Header_t fw_header;
 /******************************************************************************
  * Public Functions
  ******************************************************************************/
+
+
+/*
+ * firmware_receiver_init()
+ *
+ * Configure DMA to receive the fixed-size firmware header.
+ *
+ * The firmware header contains the information required to receive
+ * the remaining firmware image, including firmware size and CRC.
+ *
+ * Once DMA reception completes, the state advances to PARSE_HEADER.
+ */
+void firmware_receiver_init(void)
+{
+    dma_receive(&fw_header, sizeof(FW_Header_t));
+
+}
+
+
+
+void firmware_receiver_dma_callback(uint8_t value)
+{
+    rx_data_ready = value;
+}
+
+uint8_t get_rx_update(void){
+	return rx_data_ready;
+}
+
 void firmware_rx_process(void)
 {
     switch(rx_state)
     {
-
-    	/*
-    	 * RECEIVE_HEADER
-    	 *
-    	 * Configure DMA to receive the fixed-size firmware header.
-    	 *
-    	 * The firmware header contains the information required to receive
-    	 * the remaining firmware image, including firmware size and CRC.
-    	 *
-    	 * Once DMA reception completes, the state advances to PARSE_HEADER.
-    	 */
-        case RECEIVE_HEADER:
-        	dma_receive(&fw_header, sizeof(FW_Header_t));
-        	rx_state = PARSE_HEADER;
-            break;
-
-
 
             /*
              * PARSE_HEADER
