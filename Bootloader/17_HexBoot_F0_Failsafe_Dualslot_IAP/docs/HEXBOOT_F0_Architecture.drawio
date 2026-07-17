@@ -64,7 +64,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="raJXCtYhrC6kMBx_FDhs" name="01 - Power-on Boot Flow">
-    <mxGraphModel dx="981" dy="502" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1373" dy="703" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -94,7 +94,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="izj4jNlfh5hIQMQtfZgN-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;fontFamily=Helvetica;fontSize=12;fontColor=#ffffff;fillColor=none;strokeColor=#001DBC;" value="&lt;font style=&quot;color: rgb(0, 0, 0); font-size: 15px;&quot;&gt;&lt;font style=&quot;&quot;&gt;Star&lt;/font&gt;t receiving the new Firmware and store it&lt;/font&gt;" vertex="1">
-          <mxGeometry height="65" width="140" x="100" y="740" as="geometry" />
+          <mxGeometry height="65" width="140" x="130" y="740" as="geometry" />
         </mxCell>
         <mxCell id="CNlEJPn-1JGO4aDKd5x5-21" edge="1" parent="1" source="izj4jNlfh5hIQMQtfZgN-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="CNlEJPn-1JGO4aDKd5x5-20">
           <mxGeometry relative="1" as="geometry" />
@@ -106,7 +106,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="izj4jNlfh5hIQMQtfZgN-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;align=center;verticalAlign=top;fontFamily=Helvetica;fontSize=12;fontColor=#ffffff;fillColor=none;strokeColor=#001DBC;" value="&lt;font style=&quot;color: rgb(0, 0, 0); font-size: 15px;&quot;&gt;Firmware Update Flow&lt;/font&gt;" vertex="1">
-          <mxGeometry height="47.5" width="120" x="110" y="834.5" as="geometry" />
+          <mxGeometry height="47.5" width="120" x="140" y="834.5" as="geometry" />
         </mxCell>
         <mxCell id="CNlEJPn-1JGO4aDKd5x5-8" edge="1" parent="1" source="CNlEJPn-1JGO4aDKd5x5-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="CNlEJPn-1JGO4aDKd5x5-7">
           <mxGeometry relative="1" as="geometry" />
@@ -175,13 +175,16 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="1xIGFsssDFQmRJnfZROI-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000099;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Send Target Slot to Sender&lt;/font&gt;" vertex="1">
-          <mxGeometry height="40" width="140" x="100" y="670" as="geometry" />
+          <mxGeometry height="40" width="140" x="130" y="670" as="geometry" />
         </mxCell>
         <mxCell id="1xIGFsssDFQmRJnfZROI-5" edge="1" parent="1" source="1xIGFsssDFQmRJnfZROI-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="1xIGFsssDFQmRJnfZROI-2" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="1xIGFsssDFQmRJnfZROI-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000099;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Determine Inactive Slot&lt;/font&gt;" vertex="1">
-          <mxGeometry height="50" width="120" x="110" y="580" as="geometry" />
+          <mxGeometry height="50" width="120" x="140" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="1xIGFsssDFQmRJnfZROI-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;&lt;font style=&quot;font-size: 15px;&quot;&gt;NOTE:&lt;/font&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;The bootloader determines the inactive slot&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;using the metadata and informs the sender&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;which firmware image is required.&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="130" y="580" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
