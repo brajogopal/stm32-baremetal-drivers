@@ -46,7 +46,7 @@ MEMORY
 {
   VECTOR_RAM (rw) : ORIGIN = 0x20000000, LENGTH = 0xC0
   RAM    (xrw)    : ORIGIN = 0x200000C0,   LENGTH = 8K - 0xC0
-  FLASH (rx) : ORIGIN = 0x08004020, LENGTH = 23k
+  FLASH (rx) : ORIGIN = 0x0800A000, LENGTH = 23k
 }
 
 /* Sections */

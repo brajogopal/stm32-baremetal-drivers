@@ -29,8 +29,10 @@
 typedef struct
 {
     uint8_t  header;
-    uint16_t payload_length;
-    uint16_t crc;
+    uint16_t payload_length_A;
+    uint16_t payload_length_B;
+    uint16_t crc_A;
+    uint16_t crc_B;
 } FW_Header_t;
 
 
@@ -65,10 +67,12 @@ typedef enum
 
 
 
-extern uint16_t payload_length;
+extern uint16_t payload_length_A;
+extern uint16_t payload_length_B;
 extern volatile uint32_t header_received;
 extern volatile uint32_t bytes_received;
-extern uint16_t expected_crc;
+extern uint16_t expected_crc_A;
+extern uint16_t expected_crc_B;
 extern volatile uint8_t program_chunk_size;
 
 
@@ -76,6 +80,8 @@ extern volatile uint8_t program_chunk_size;
 void firmware_receiver_init(void);
 
 void firmware_receiver_dma_callback(uint8_t value);
+
+void firmware_set_payload_info(uint16_t length, uint16_t crc);
 
 uint8_t get_rx_update(void);
 

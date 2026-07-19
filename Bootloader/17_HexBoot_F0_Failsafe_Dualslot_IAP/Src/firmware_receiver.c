@@ -36,20 +36,23 @@
 #include "uart.h"
 #include "dma.h"
 
+#include <stdio.h>
 
 #define FW_HEADER 0xAA
 
 static volatile fw_rx_state_t rx_state = PARSE_HEADER;
 static volatile uint8_t rx_data_ready;
-volatile uint16_t chunk_index = 0;
+
 
 
 
 /******************************************************************************
  * Global Variables
  ******************************************************************************/
-uint16_t payload_length = 0;
-uint16_t expected_crc = 0;
+uint16_t payload_length_A = 0;
+uint16_t expected_crc_A = 0;
+uint16_t payload_length_B = 0;
+uint16_t expected_crc_B = 0;
 volatile uint8_t program_chunk_size = 0;
 volatile uint32_t header_received = 0;
 volatile uint32_t bytes_received = 0;
@@ -66,6 +69,16 @@ static FW_Header_t fw_header;
 /******************************************************************************
  * Public Functions
  ******************************************************************************/
+
+static uint16_t payload_length;
+static uint16_t expected_crc;
+
+void firmware_set_payload_info(uint16_t length, uint16_t crc)
+{
+    payload_length = length;
+    expected_crc   = crc;
+}
+
 
 
 /*
@@ -97,6 +110,7 @@ uint8_t get_rx_update(void){
 
 void firmware_rx_process(void)
 {
+	printf("RX State = %d\r\n", rx_state);
     switch(rx_state)
     {
 
@@ -113,8 +127,12 @@ void firmware_rx_process(void)
              */
         case PARSE_HEADER:
         	if(fw_header.header == FW_HEADER){
-        		payload_length = fw_header.payload_length;
-        		expected_crc = fw_header.crc;
+        		payload_length_A = fw_header.payload_length_A;
+        		payload_length_B = fw_header.payload_length_B;
+
+        		expected_crc_A = fw_header.crc_A;
+        		expected_crc_B = fw_header.crc_B;
+
         		header_received = 1;
         		rx_state = START_PAYLOAD_DMA;
         	}	else
@@ -192,14 +210,14 @@ void firmware_rx_process(void)
         	 */
         case FW_COMPLETE:
         	/* Reserved for future use */
-
+        	println("fw complete");
             break;
 
 
 
         case FW_ERROR:
         	/* Reserved for future error handling */
-
+        	println("fw error");
             break;
     }
 }

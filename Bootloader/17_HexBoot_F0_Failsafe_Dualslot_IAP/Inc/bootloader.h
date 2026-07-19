@@ -29,12 +29,20 @@
 #define FLASH_START 0x08000000U
 #define FLASH_END   (FLASH_START + (64 * 1024))	//For STM32F030C8TX
 
+typedef struct
+{
+    uint16_t payload_length;
+    uint16_t crc;
+} firmware_info_t;
+
+//firmware_info_t firmware_get_info(slot_t slot);
 void bootloader_init(void);
 void bootloader_run(void);
 typedef void (*func_ptr)(void);
 int is_valid_app(uint32_t addr);
 void relocate_vector_table(uint32_t app_address);
 void jmp_to_app(uint32_t app_address);
+void jump(void);
 void flash_handle_status(flash_status_t status);
 
 

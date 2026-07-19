@@ -38,6 +38,6 @@ int main(void){
 	while(1){
 		//set PA5 HIGH
 		GPIOA_ODR ^= LED_PIN ;
-		for(int i=0;i<100000;i++){}
+		for(int i=0;i<1000000;i++){}
 	}
 }

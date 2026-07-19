@@ -1,56 +1,140 @@
-import os
+#!/usr/bin/env python3
+
+import argparse
 import struct
+from pathlib import Path
 
-HEADER = 0xAA # Must match bootloader
-PADDING = 0x00 # Structure padding (matches FW_Header_t)
+# ----------------------------------------------------------
+# Configuration
+# ----------------------------------------------------------
 
-def crc16_ccitt(data):
+FW_HEADER = 0xAA
+
+
+# ----------------------------------------------------------
+# CRC16 (Modbus)
+# ----------------------------------------------------------
+
+def crc16(data: bytes) -> int:
+
     crc = 0xFFFF
 
     for byte in data:
-        crc ^= (byte << 8)
+
+        crc ^= byte
 
         for _ in range(8):
-            if crc & 0x8000:
-                crc = ((crc << 1) ^ 0x1021) & 0xFFFF
+
+            if crc & 1:
+                crc = (crc >> 1) ^ 0xA001
             else:
-                crc = (crc << 1) & 0xFFFF
+                crc >>= 1
 
-    return crc
+    return crc & 0xFFFF
 
 
-input_file = input("Enter firmware bin file: ")
+# ----------------------------------------------------------
+# Read Firmware
+# ----------------------------------------------------------
 
-with open(input_file, "rb") as file:
-    firmware_data = file.read()
+def firmware_info(filename):
 
-firmware_length = len(firmware_data)
+    with open(filename, "rb") as f:
+        data = f.read()
 
-crc = crc16_ccitt(firmware_data)
+    return {
+        "size": len(data),
+        "crc": crc16(data)
+    }
 
-packet = bytearray()
 
-packet.append(HEADER)
-packet.append(PADDING)
+# ----------------------------------------------------------
+# Main
+# ----------------------------------------------------------
 
-# Length
-packet.extend(struct.pack("<H", firmware_length))
+def main():
 
-# CRC
-packet.extend(struct.pack("<H", crc))
+    parser = argparse.ArgumentParser(
+        description="HEXBOOT_F0 Header Generator"
+    )
 
-# Payload
-packet.extend(firmware_data)
+    parser.add_argument(
+        "slot_a",
+        help="Firmware image for Slot A"
+    )
 
-output_file = os.path.splitext(input_file)[0] + "_packet.bin"
+    parser.add_argument(
+        "slot_b",
+        help="Firmware image for Slot B"
+    )
 
-with open(output_file, "wb") as file:
-    file.write(packet)
+    parser.add_argument(
+        "-o",
+        "--output",
+        default="firmware_header.bin",
+        help="Output header filename"
+    )
 
-print("\nPacket Created Successfully")
-print("----------------------------")
-print(f"Input File     : {input_file}")
-print(f"Output File    : {output_file}")
-print(f"Payload Length : {firmware_length} bytes")
-print(f"CRC16          : 0x{crc:04X}")
-print(f"Packet Size    : {len(packet)} bytes")
+    args = parser.parse_args()
+
+    slot_a = firmware_info(args.slot_a)
+    slot_b = firmware_info(args.slot_b)
+
+    print()
+    print("----------------------------------------")
+    print(" Slot A")
+    print("----------------------------------------")
+    print(f"File : {args.slot_a}")
+    print(f"Size : {slot_a['size']} bytes")
+    print(f"CRC  : 0x{slot_a['crc']:04X}")
+
+    print()
+    print("----------------------------------------")
+    print(" Slot B")
+    print("----------------------------------------")
+    print(f"File : {args.slot_b}")
+    print(f"Size : {slot_b['size']} bytes")
+    print(f"CRC  : 0x{slot_b['crc']:04X}")
+
+    #
+    # Header Layout
+    #
+    # Byte 0  : Header
+    # Byte 1  : Reserved (Padding)
+    # Byte 2-3: Payload Length A
+    # Byte 4-5: Payload Length B
+    # Byte 6-7: CRC A
+    # Byte 8-9: CRC B
+    #
+
+    header = struct.pack(
+        "<BBHHHH",
+        FW_HEADER,
+        0x00,                  # Reserved / Padding
+        slot_a["size"],
+        slot_b["size"],
+        slot_a["crc"],
+        slot_b["crc"]
+    )
+
+    with open(args.output, "wb") as f:
+        f.write(header)
+
+    print()
+    print("----------------------------------------")
+    print("Generated")
+    print("----------------------------------------")
+    print(args.output)
+    print(f"Header Size : {len(header)} bytes")
+    print()
+
+    print("Testing Sequence")
+    print("----------------")
+    print("1. Send firmware_header.bin")
+    print("2. Wait for bootloader")
+    print("3. Bootloader prints REQUEST SLOT")
+    print("4. Send corresponding firmware image")
+
+
+if __name__ == "__main__":
+    main()
