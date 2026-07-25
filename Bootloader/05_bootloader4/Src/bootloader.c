@@ -7,6 +7,7 @@
 #include "bootloader.h"
 #include "stm32f030x8.h"
 #include "uart.h"
+#include "flash_driver.h"
 #include "delay.h"
 #include <stdio.h>
 
