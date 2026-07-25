@@ -1,13 +1,13 @@
 <mxfile host="app.diagrams.net" pages="9">
   <diagram id="19aB-_wpBi4vk83BosFm" name="00 – Design Requirements">
-    <mxGraphModel dx="2289" dy="1171" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1288" dy="659" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="t_uIKrn-4b3pxPp6pcEA-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;movable=0;resizable=0;rotatable=0;deletable=0;editable=0;locked=1;connectable=0;" value="&lt;font style=&quot;font-size: 25px;&quot;&gt;&lt;b&gt;&lt;u&gt;Design Requirements&lt;/u&gt;&lt;/b&gt;&lt;/font&gt;" vertex="1">
           <mxGeometry height="130" width="690" x="90" as="geometry" />
         </mxCell>
-        <mxCell id="FqrhXBTiePY03rhQLKqd-1" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFFFFF;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Purpose&lt;/font&gt;" vertex="1">
+        <mxCell id="FqrhXBTiePY03rhQLKqd-1" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#FFFFFF;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Project Goals&lt;/font&gt;" vertex="1">
           <mxGeometry height="145" width="200" x="75" y="160" as="geometry">
             <mxRectangle height="30" width="100" x="120" y="155" as="alternateBounds" />
           </mxGeometry>
@@ -33,7 +33,7 @@
         <mxCell id="YEGBfUHxtdwAFkQPEW-4-18" edge="1" parent="YEGBfUHxtdwAFkQPEW-4-10" source="YEGBfUHxtdwAFkQPEW-4-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="YEGBfUHxtdwAFkQPEW-4-14">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="YEGBfUHxtdwAFkQPEW-4-13" parent="YEGBfUHxtdwAFkQPEW-4-10" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Phython Tool&lt;/font&gt;" vertex="1">
+        <mxCell id="YEGBfUHxtdwAFkQPEW-4-13" parent="YEGBfUHxtdwAFkQPEW-4-10" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Python Tool&lt;/font&gt;" vertex="1">
           <mxGeometry height="30" width="120" x="35" y="130" as="geometry" />
         </mxCell>
         <mxCell id="YEGBfUHxtdwAFkQPEW-4-19" edge="1" parent="YEGBfUHxtdwAFkQPEW-4-10" source="YEGBfUHxtdwAFkQPEW-4-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="YEGBfUHxtdwAFkQPEW-4-15">
@@ -184,18 +184,18 @@
     </mxGraphModel>
   </diagram>
   <diagram id="SfUKG9vDyR8ujWh16_6G" name="02 - Firmware Update Flow">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="896" dy="458" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="cc2mbl7yTZUhJ6wzNxdv-1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Firmware Update Flow&lt;/h1&gt;&lt;p&gt;&lt;font style=&quot;font-size: 15px;&quot;&gt;How does the new firmware get installed&lt;/font&gt;&lt;/p&gt;" vertex="1">
           <mxGeometry height="80" width="680" x="85" y="20" as="geometry" />
         </mxCell>
-        <mxCell id="xOUu2K6jx4zl3n8vLmAP-3" edge="1" parent="1" source="h-qpTZc8MgyADrSAfExr-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="xOUu2K6jx4zl3n8vLmAP-2">
+        <mxCell id="dtvFnBTCVhwUn4_5GVsT-2" edge="1" parent="1" source="h-qpTZc8MgyADrSAfExr-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="dtvFnBTCVhwUn4_5GVsT-1" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="h-qpTZc8MgyADrSAfExr-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" value="Firmware Received" vertex="1">
-          <mxGeometry height="40" width="120" x="420" y="170" as="geometry" />
+        <mxCell id="h-qpTZc8MgyADrSAfExr-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#008a00;strokeColor=#005700;fontColor=#ffffff;" value="DMA Reception" vertex="1">
+          <mxGeometry height="40" width="120" x="420" y="140" as="geometry" />
         </mxCell>
         <mxCell id="tXZwgb27o6TBdXs5GdUM-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000099;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;State Machine switch to FW_COMPLETE&lt;/font&gt;" vertex="1">
           <mxGeometry height="60" width="205" x="378" y="390" as="geometry" />
@@ -262,7 +262,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="xOUu2K6jx4zl3n8vLmAP-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000099;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Program Flash&lt;br/&gt;(Chunk by Chunk)&lt;/font&gt;" vertex="1">
-          <mxGeometry height="60" width="165" x="398" y="270" as="geometry" />
+          <mxGeometry height="60" width="165" x="398" y="290" as="geometry" />
         </mxCell>
         <mxCell id="s7WbwC8r0J0qCPMxCvHN-3" edge="1" parent="1" source="s7WbwC8r0J0qCPMxCvHN-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="s7WbwC8r0J0qCPMxCvHN-2" value="">
           <mxGeometry relative="1" as="geometry" />
@@ -304,6 +304,12 @@
         </mxCell>
         <mxCell id="YKixDyXGz-XmOxmDocoG-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000099;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Notify Firmware Sender&lt;/font&gt;" vertex="1">
           <mxGeometry height="50" width="120" x="65" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="dtvFnBTCVhwUn4_5GVsT-3" edge="1" parent="1" source="dtvFnBTCVhwUn4_5GVsT-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="xOUu2K6jx4zl3n8vLmAP-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="dtvFnBTCVhwUn4_5GVsT-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000099;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Ping-Pong Buffer&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="120" x="420" y="210" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -455,7 +461,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="smp3jzhIWIWqP4ozrpCf" name="06 - Application Jump Flow">
-    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1471" dy="753" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -465,7 +471,7 @@
         <mxCell id="FL_a2gL3OrgLL8pnGNbl-3" edge="1" parent="1" source="FL_a2gL3OrgLL8pnGNbl-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="FL_a2gL3OrgLL8pnGNbl-2" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="FL_a2gL3OrgLL8pnGNbl-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Slot Maneger&lt;/font&gt;" vertex="1">
+        <mxCell id="FL_a2gL3OrgLL8pnGNbl-1" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;Slot Manager&lt;/font&gt;" vertex="1">
           <mxGeometry height="50" width="155" x="348" y="100" as="geometry" />
         </mxCell>
         <mxCell id="FL_a2gL3OrgLL8pnGNbl-6" edge="1" parent="1" source="FL_a2gL3OrgLL8pnGNbl-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="FL_a2gL3OrgLL8pnGNbl-1">
